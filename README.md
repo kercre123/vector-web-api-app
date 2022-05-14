@@ -22,6 +22,12 @@ To install it onto Vector, put ./build/custom-web into Vector's /bin, then every
 
 ./sbin/custom-web-interface goes to Vector's /sbin/, etc
 
+After all the files are in place run:
+
+`systemctl daemon-reload && systemctl enable vic-custom-web && systemctl start vic-custom-web`
+
+The app should now be accessible at port 8080. You may need to allow it in `/etc/iptables/iptables.rules`
+
 ## Current Efforts
 
 The main current effort is to implement all SDK and webViz communication in golang.
