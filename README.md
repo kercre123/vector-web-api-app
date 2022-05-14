@@ -6,6 +6,8 @@ It communicates with both Vector's HTTPS SDK API and webViz.
 
 ## Building
 
+The build system is from Digital Dream Lab's [vector-cloud](https://github.com/digital-dream-labs/vector-cloud)
+
 Install golang and docker
 
 `git clone https://github.com/kercre123/wire-vector-custom-api`
