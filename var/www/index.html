@@ -1,75 +1,55 @@
+<!DOCTYPE html>
 <html>
 <head>
+  <title>Vector Web App</title>
   <link rel="stylesheet" type="text/css" href="./css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <h1>Vector HTTP App</h1>
+
+
+<div id="outer">
+<div id="content" class="">
+  <h1 class="center">Vector Web App</h1>
   <hr>
-  <h3>Notices:</h2>
-    <div id="notices"></div>
+  <h3 class="center">Notices:</h3>
+    <div class="center" id="authStatus"></div>
     <hr>
-    <h2>Set Volume</h2>
-    <div class="dropdown">
-      <button class="dropbtn">Hover Over This</button>
-      <div class="dropdown-content">
+      <a class="center" href="/info.html">General notes about this app</a>
+    <hr>
+    <h2 class="center">Volume</h2>
+    <div id="currentVolume" class="center"></div>
         <ul>
-          <li><form method="post" action="/api/volume?volume=0" target="hiddenFrame">
-            <button type="submit">Mute</button>
-          </form></li>
-          <li><form method="post" action="/api/volume?volume=1" target="hiddenFrame">
-            <button type="submit">Low</button>
-          </form></li>
-          <li><form method="post" action="/api/volume?volume=2" target="hiddenFrame">
-            <button type="submit">Medium Low</button>
-          </form></li>
-          <li><form method="post" action="/api/volume?volume=3" target="hiddenFrame">
-            <button type="submit">Medium</button>
-          </form></li>
-          <li><form method="post" action="/api/volume?volume=4" target="hiddenFrame">
-            <button type="submit">Medium High</button>
-          </form></li>
-          <li><form method="post" action="/api/volume?volume=5" target="hiddenFrame"> 
-            <button type="submit">High</button>
-          </form></li>
+          <li><button onclick="sendForm('/api/volume?volume=0')" type="submit">Mute</button></li>
+          <li><button onclick="sendForm('/api/volume?volume=1')" type="submit">Low</button></li>
+          <li><button onclick="sendForm('/api/volume?volume=2')" type="submit">Medium Low</button></li>
+          <li><button onclick="sendForm('/api/volume?volume=3')" type="submit">Medium</button></li>
+          <li><button onclick="sendForm('/api/volume?volume=4')" type="submit">Medium High</button></li>
+          <li><button onclick="sendForm('/api/volume?volume=5')" type="submit">High</button></li>
         </ul>
-      </div>
-    </div>
     <hr>
-    <h2>Set Eye Color</h2>
-    <h4>Preset Eye Colors:</h4>
-    <div class="dropdown">
-      <button class="dropbtn">Hover Over This</button>
-      <div class="dropdown-content">
+    <h2 class="center">Eye Color</h2>
+    <div id="currentEyeColor" class="center"></div>
+    <h4 class="center">Preset Eye Colors:</h4>
         <ul>
-          <li><form method="post" action="/api/eye_color?color=0" target="hiddenFrame"> 
-            <button type="submit">Teal</button>
-          </form></li>
-          <li><form method="post" action="/api/eye_color?color=1" target="hiddenFrame"> 
-            <button type="submit">Orange</button>
-          </form></li>
-          <li><form method="post" action="/api/eye_color?color=2" target="hiddenFrame"> 
-            <button type="submit">Yellow</button>
-          </form></li>
-          <li><form method="post" action="/api/eye_color?color=3" target="hiddenFrame"> 
-            <button type="submit">Lime Green</button>
-          </form></li>
-          <li><form method="post" action="/api/eye_color?color=4" target="hiddenFrame"> 
-            <button type="submit">Azure Blue</button>
-          </form></li>
-          <li><form method="post" action="/api/eye_color?color=5" target="hiddenFrame"> 
-            <button type="submit">Purple</button>
-          </form></li>
-          <li><form method="post" action="/api/eye_color?color=6" target="hiddenFrame"> 
-            <button type="submit">Matrix Green/White</button>
-          </form></li>
+          <li><button onclick="sendForm('/api/eye_color?color=0')" type="submit">Teal</button></li>
+          <li><button onclick="sendForm('/api/eye_color?color=1')" type="submit">Orange</button></li>
+          <li><button onclick="sendForm('/api/eye_color?color=2')" type="submit">Yellow</button></li>
+          <li><button onclick="sendForm('/api/eye_color?color=3')" type="submit">Lime Green</button></li>
+          <li><button onclick="sendForm('/api/eye_color?color=4')" type="submit">Azure Blue</button></li>
+          <li><button onclick="sendForm('/api/eye_color?color=5')" type="submit">Purple</button></li>
+          <li><button onclick="sendForm('/api/eye_color?color=6')" type="submit">White</button></li>
         </ul>
-      </div>
-    </div>
-    <h4>Custom Eye Color:</h4>
-    <div id="picker"></div>
-    <button onclick="sendCustomColor()">Submit</button>
+    <h4 class="center">Custom Eye Color:</h4>
+    <div class="center" id="picker"></div><br />
+    <button class="settings" onclick="sendCustomColor()">Submit</button>
+    <h4 class="center">Rainbow Eyes:</h4>
+      <ul>
+        <li><button onclick="sendForm('/api/rainbow_on')" type="submit">Rainbow On</button></li>
+        <li><button onclick="sendFormRainbowOff('/api/rainbow_off')" type="submit">Rainbow Off</button></li>
+      </ul>
     <hr>
-    <h2>Quick Actions</h2>
+    <h2 class="center">Quick Actions</h2>
     <form method="POST" action="/api/cloud_intent?intent=intent_explore_start" target="hiddenFrame">
       <button type="submit">Explore Start</button>
     </form>
@@ -83,7 +63,7 @@
       <button type="submit">Goodnight</button>
     </form>
     <hr>
-    <h2>BlackJack</h2>
+    <h2 class="center">BlackJack</h2>
     <form method="POST" action="/api/cloud_intent?intent=intent_play_blackjack" target="hiddenFrame">
       <button type="submit">Play Blackjack</button>
     </form>
@@ -100,11 +80,10 @@
       <button type="submit">Don't Play Again</button>
     </form>
     <hr>
-    <h2>All Intents</h2>
+    <h2 class="center">All Intents</h2>
     <div class="dropdown">
       <button class="dropbtn">Hover Over This</button>
       <div class="dropdown-content">
-        <!--Listing Manually.-->
         <ul>
           <li><form method="post" action="/api/cloud_intent?intent=intent_amazon_signin" target="hiddenFrame"> 
             <button type="submit">Signin Alexa</button>
@@ -251,19 +230,86 @@
       </div>
     </div>
     <hr>
-    <h2>Timer</h2>
-    <p>Set timer (seconds)</p>
+    <h2 class="center">Timer</h2>
+    <div class="center">
+	   <p>Set timer (seconds)</p>
+	</div>
+	<div class="center">
     <form method="POST" action="/api/set_timer" target="hiddenFrame">
-      <input name="secs" type="text" placeholder="Put seconds here">
+      <input class="tinput" name="secs" type="text" placeholder="Put seconds here">
       <input type="submit">
     </form>
+	</div>
+
     <form method="post" action="/api/cloud_intent?intent=intent_clock_checktimer" target="hiddenFrame"> 
       <button type="submit">Check Timer</button>
     </form>
+
     <form method="post" action="/api/stop_timer" target="hiddenFrame"> 
       <button type="submit">Stop Timer</button>
     </form>
     <hr>
+<h2 class="center">Locale</h2>
+<div id="currentLocale" class="center"></div>
+<ul>
+<li><button onclick="sendForm('/api/locale?locale=en-US')" type="submit">English (US)</button></li>
+<li><button onclick="sendForm('/api/locale?locale=en-GB')" type="submit">English (GB)</button></li>
+<li><button onclick="sendForm('/api/locale?locale=en-AU')" type="submit">English (AU)</button></li>
+<li><button onclick="sendForm('/api/locale?locale=de-DE')" type="submit">German</button></li>
+<li><button onclick="sendForm('/api/locale?locale=fr-FR')" type="submit">French</button></li>
+<li><button onclick="sendForm('/api/locale?locale=ja-JP')" type="submit">Japanese</button></li>
+  </ul>
+<hr>
+<h2 class="center">Time Format</h2>
+<div id="currentTimeSet" class="center"></div>
+<ul>
+<li><button onclick="sendForm('/api/time_format_12')" type="submit">12 Hour</button></li>
+<li><button onclick="sendForm('/api/time_format_24')" type="submit">24 Hour</button></li>
+  </ul>
+
+<hr>
+<h2 class="center">Temp Format</h2>
+<div id="currentTempFormat" class="center"></div>
+<ul>
+<li><button onclick="sendForm('/api/temp_c')" type="submit">Celsius</button></li>
+<li><button onclick="sendForm('/api/temp_f')" type="submit">Fahrenheit</button></li>
+  </ul>
+
+<hr>
+<h2 class="center">Button Action</h2>
+<div id="currentButton" class="center"></div>
+<ul>
+<li><button onclick="sendForm('/api/button_hey_vector')" type="submit">Hey Vector</button></li>
+<li><button onclick="sendForm('/api/button_alexa')" type="submit">Alexa</button></li>
+  </ul>
+
+<hr>
+<h2 class="center">Server Environment</h2>
+<div id="currentServer" class="center"></div>
+<ul>
+<li><button class="serverProd" type="submit">Production</button></li>
+<li><button class="serverEscape" type="submit">Escape Pod</button></li>
+  </ul>
+
+<hr>
+<p>Temporary workaround for Escape Pod.<br />Onboarding will not complete via the official method<br />for now so use this button to skip it.</p>
+    <form method="post" action="/api/skip_onboarding" target="hiddenFrame">
+      <button type="submit">Skip Onboarding</button>
+    </form>
+<hr>
+<h2 class="center">Snore While Sleeping</h2>
+<div id="currentSnore" class="center"></div>
+<small>Note: This will restart the robot processes. The screen will be dark<br />for around 10 seconds. Refresh this page after his eyes return.</small>
+<ul>
+<li><button onclick="sendForm('/api/snore_enable')" type="submit">Enable</button></li>
+<li><button onclick="sendForm('/api/snore_disable')" type="submit">Disable</button></li>
+  </ul>
+
+<hr>
+</div>
+</div>
+
+
   </body>
   </html>
   <script src="./js/httprequest.js"></script>

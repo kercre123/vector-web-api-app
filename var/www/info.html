@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Vector Web App Info</title>
+		<link rel="stylesheet" type="text/css" href="./css/style.css">
+	</head>
+	<body>
+	<div id="outer">
+	<div id="content">
+		<h1>Vector Web App Information</h1>
+		<hr>
+		<h2>Implementation:</h2>
+		<p>The implementation of this web app needs a little bit of explanation since it is a little strange.<br><br>
+		The original idea was to make an app that uses pure browser-side JS to communicate directly with the Vector HTTPS SDK interface. That would be the best way to do it.<br><br>
+		However, somewhere early in the process I decided to change paths and make a whole new robot-side HTTP API (docs coming soon). This is so devices like ESPs, Raspberry Pis, etc can communicate with Vector directly without going through an authentication/GUID hurdle.<br><br>
+		This API was made with golang and accepts HTTP POST requests. There is a helper bash script which uses CURL which is what actually commmunicates with Vector's HTTPS interface and the auth servers.</p>
+		<hr>
+		<h2>Known Issues:</h2>
+		<ul>
+			<li>Sometimes settings won't update, especially when Vector is sleeping due to lowered cpu freq</li>
+			<li>The app is overall pretty slow due to how many steps it takes for each call.</li>
+		</ul>
+		<hr>
+		<h2>Planned Features:</h2>
+		<ul>
+			<li>Say Text</li>
+			<li>Meet Victor</li>
+			<li>Remote Control</li>
+			<li>Camera Feed (maybe)</li>
+			<li>Snoring enable/disable</li>
+			<li>CPU/RAM frequency setter</li>
+			<li>Snowglobe enable/disable</li>
+			<li>Boot slot (a/b) selector</li>
+			<li>Soundbank selection (could put in noises from 1.0, 1.1, 1.6, etc)
+			<li>Option to downgrade to 1.6</li>
+		</ul>
+		<hr>
+		</div>
+		</div>
+	</body>
+</html>

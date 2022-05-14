@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-
 <html>
 <head>
-    <title>SDK Auth</title>
+    <title>Vector Web App Auth</title>
     <script src="./js/httprequest.js"></script>
     <script src="./js/auth.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
 <body>
-    <h1>Vector HTTP App Auth</h1>
+<div id="outer">
+<div id="content">
+    <h1>Vector Web App Auth</h1>
     <hr>
-    <p>Enter the credentials you used for the Anki Vector mobile app here, then press "Log In".</p>
+    <p>Enter the credentials you would use for the<br />Anki Vector mobile app here, then press "Log In".</p>
     <form id="authForm">
         <p>Email Address:</p>
         <input name="username" id="username" type="text" placeholder="Email Address"><br>
@@ -19,5 +21,13 @@
     </form>
     <div id=authResult></div>
     <hr>
+    <p>If Vector is on the onboarding screen, click here to skip it.</p>
+    <form method="post" action="/api/skip_onboarding" target="hiddenFrame">
+      <button type="submit">Skip Onboarding</button>
+    </form>
+    <hr>
+</div>
+</div>	
 </body>
 </html>
+  <iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe>
