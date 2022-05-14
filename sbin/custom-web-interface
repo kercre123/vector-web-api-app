@@ -1,0 +1,115 @@
+#!/bin/bash
+
+function socketReq() {
+  /bin/websocat ws://localhost:8888/socket
+}
+
+robotSettings=/data/data/com.anki.victor/persistent/jdocs/vic.RobotSettings.json
+ipaddress=$(ifconfig wlan0 | grep 'inet addr' | cut -d: -f2 | busybox awk '{print $1}')
+
+if [[ $1 == "cloud_intent" ]]; then
+  echo '{"type":"data","module":"intents","data":{"intentType":"cloud","request":"'$2'"}}' | socketReq
+elif [[ $1 == "set_timer" ]]; then
+  echo '{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_clock_settimer_extend\", \"parameters\" : \"{\\\"timer_duration\\\":\\\"'$2'\\\",\\\"unit\\\":\\\"s\\\"}\\n\"}"}}' | socketReq
+elif [[ $1 == "stop_timer" ]]; then
+  echo '{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_global_stop_extend\", \"metadata\" : \"text: stop the timer  confidence: 0.000000  handler: HOUNDIFY\", \"parameters\" : \"{\\\"entity_behavior_stoppable\\\":\\\"timer\\\"}\\n\", \"time\" : 1649608984, \"type\" : \"result\" }"}}' | socketReq
+elif [[ $1 == "eye_color" ]]; then
+  if grep "custom_eye_color" ${robotSettings}; then
+   if grep '"enabled" : true,' ${robotSettings}; then
+     /anki/bin/vector-ctrl --set_p_eyec
+   fi
+ fi
+ curl -d "key=EyeColor&value=$2" -X POST http://localhost:8888/consolevarset
+ curl -d "func=DebugSetEyeColor&args=" -X POST http://localhost:8888/consolefunccall
+elif [[ $1 == "volume" ]]; then
+  curl -d "key=MasterVolumeLevel&value=$2" -X POST http://localhost:8888/consolevarset
+  curl -d "func=DebugSetMasterVolume&args=" -X POST http://localhost:8888/consolefunccall
+elif [[ $1 == "custom_eye_color" ]]; then
+  cp /wirefiles/settings/ceyec_command /data/protected/ceyec_command
+  sed -i "s/REPLACEMEHUE/$2/g" /data/protected/ceyec_command
+  sed -i "s/REPLACEMESAT/$3/g" /data/protected/ceyec_command
+  /anki/bin/vector-ctrl --set_c_eyec
+  #rm -f /data/protected/ceyec_command
+elif [[ $1 = "get_auth_status" ]]; then
+  if [[ -f /tmp/authStatus ]]; then
+   rm -f /tmp/authStatus
+   touch /tmp/authStatus
+ fi
+ if [[ -f /wirefiles/escape ]]; then
+   echo "escapepod" > /tmp/authStatus
+ elif [[ ! -d /data/protected ]]; then
+   echo "not authorized 1" >> /tmp/authStatus
+ elif grep "error" /data/protected/json.blob; then
+   echo "not authorized 2" >> /tmp/authStatus
+ elif grep "session_token" /data/protected/json.blob; then
+   echo "authorized" > /tmp/authStatus
+ else
+   echo "bad" > /tmp/authStatus
+ fi
+elif [[ $1 = "sdk_auth" ]]; then
+  if [[ -d /data/protected ]]; then
+   rm -rf /data/protected
+ fi
+ mkdir -p /data/protected
+ echo $2 > /data/protected/username
+ echo $3 > /data/protected/password
+ /anki/bin/vector-ctrl
+ if grep "error" /data/protected/json.blob; then
+   echo "error" > /tmp/authResult
+   rm -rf /data/protected
+ elif grep "session_token" /data/protected/json.blob; then
+   echo "success" > /tmp/authResult
+ else
+   echo "bad" > /tmp/authResult
+ fi
+elif [[ $1 == "locale" ]]; then
+  cp /wirefiles/settings/locale_command /data/protected/locale_command
+  sed -i "s/REPLACEMELOC/$2/g" /data/protected/locale_command
+  /anki/bin/vector-ctrl --set_locale
+  #rm -f /data/protected/ceyec_command
+elif [[ $1 == "rainbow_status" ]]; then
+  if [[ -f /data/data/rainboweyes ]]; then
+     echo "on" > /tmp/rainbowStatus
+  else
+     echo "off" > /tmp/rainbowStatus
+  fi
+elif [[ $1 == "button_hey_vector" ]]; then
+  cp /wirefiles/settings/button_command /data/protected/setting_command
+  sed -i "s/REPLACEME/0/g" /data/protected/setting_command
+  /anki/bin/vector-ctrl --setting
+elif [[ $1 == "button_alexa" ]]; then
+  cp /wirefiles/settings/button_command /data/protected/setting_command
+  sed -i "s/REPLACEME/1/g" /data/protected/setting_command
+  /anki/bin/vector-ctrl --setting
+elif [[ $1 == "time_format_12" ]]; then
+  cp /wirefiles/settings/time_command /data/protected/setting_command
+  sed -i "s/REPLACEME/false/g" /data/protected/setting_command
+  /anki/bin/vector-ctrl --setting
+elif [[ $1 == "time_format_24" ]]; then
+  cp /wirefiles/settings/time_command /data/protected/setting_command
+  sed -i "s/REPLACEME/true/g" /data/protected/setting_command
+  /anki/bin/vector-ctrl --setting
+elif [[ $1 == "temp_c" ]]; then
+  cp /wirefiles/settings/temp_command /data/protected/setting_command
+  sed -i "s/REPLACEME/false/g" /data/protected/setting_command
+  /anki/bin/vector-ctrl --setting
+elif [[ $1 == "temp_f" ]]; then
+  cp /wirefiles/settings/temp_command /data/protected/setting_command
+  sed -i "s/REPLACEME/true/g" /data/protected/setting_command
+  /anki/bin/vector-ctrl --setting
+elif [[ $1 == "server_status" ]]; then
+  if [[ -f /wirefiles/escape ]]; then
+     echo "escape" > /tmp/serverStatus
+  else
+     echo "prod" > /tmp/serverStatus
+  fi
+  #add newdev here
+elif [[ $1 == "skip_onboarding" ]]; then
+  curl -d "func=Exit Onboarding - Mark Complete&args=" -X POST http://localhost:8888/consolefunccall
+elif [[ $1 == "snore_status" ]]; then
+  if [[ -f /data/data/snore_disable ]]; then
+     echo "off" > /tmp/snoreStatus
+  else
+     echo "on" > /tmp/snoreStatus
+  fi
+fi

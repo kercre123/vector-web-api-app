@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>SDK Auth</title>
+    <script src="./js/httprequest.js"></script>
+    <script src="./js/auth.js"></script>
+</head>
+<body>
+    <h1>Vector HTTP App Auth</h1>
+    <hr>
+    <p>Enter the credentials you used for the Anki Vector mobile app here, then press "Log In".</p>
+    <form id="authForm">
+        <p>Email Address:</p>
+        <input name="username" id="username" type="text" placeholder="Email Address"><br>
+        <p>Password:</p>
+        <input name="password" id="password" type="password" placeholder="Password"><br><br>
+        <button type="submit" onclick="submitCreds()">Log In</button>
+    </form>
+    <div id=authResult></div>
+    <hr>
+</body>
+</html>
