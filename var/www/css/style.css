@@ -17,7 +17,7 @@ button:disabled {
 }
 button {
 	width: 170px;
-	margin-left: 100px !important;
+	margin-left: 168px !important;
 }
 
 .dropdown-content {
@@ -47,8 +47,11 @@ h1, h2, h3, h4, small, p, li {
 
 
 p, small {
+}
 
-
+.wrap {
+overflow: hidden !important;
+white-space: nowrap !important;
 }
 
 hr {
@@ -80,11 +83,25 @@ ul, li { list-style-type: none;
 	color: #ffffff !important;
 }
 
-#div#content {
-	width: 500px;
-    word-break:break-all;
+.tinputauth {
+	width: 499px !important;
+	background-color: #4B4B4B !important;
+	color: #ffffff !important;
 }
-div#outer {
+
+#username, #password {
+	width: 499px !important;
+	background-color: #4B4B4B !important;
+	color: #ffffff !important;
+}
+
+#content {
+	width: 500px !important;
+    /*word-break:break-all !important;*/
+	/*word-wrap: break-all !important;*/
+    white-space:normal !important;
+}
+#outer {
 	width: 100%;
 	display: flex;
     justify-content: center;

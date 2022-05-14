@@ -9,19 +9,21 @@
 <body>
 <div id="outer">
 <div id="content">
-    <h1>Vector Web App Auth</h1>
+    <h1 class="center">Vector Web App Auth</h1>
     <hr>
-    <p>Enter the credentials you would use for the<br />Anki Vector mobile app here, then press "Log In".</p>
+    <p>Enter the credentials you would use for the Anki Vector mobile app here, then press "Log In".</p>
     <form id="authForm">
         <p>Email Address:</p>
-        <input name="username" id="username" type="text" placeholder="Email Address"><br>
+        <input class="tinputauth" name="username" id="username" type="text" placeholder="Email Address"><br>
         <p>Password:</p>
-        <input name="password" id="password" type="password" placeholder="Password"><br><br>
+        <input class="tinputauth" name="password" id="password" type="password" placeholder="Password"><br><br>
         <button type="submit" onclick="submitCreds()">Log In</button>
     </form>
     <div id=authResult></div>
     <hr>
-    <p>If Vector is on the onboarding screen, click here to skip it.</p>
+    <div class="center">
+	<p>If Vector is on the onboarding screen, click here to skip it.</p>
+	</div>	
     <form method="post" action="/api/skip_onboarding" target="hiddenFrame">
       <button type="submit">Skip Onboarding</button>
     </form>
