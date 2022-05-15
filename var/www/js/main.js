@@ -117,8 +117,6 @@ function getCurrentSettings() {
   xhr.responseType = 'json';
   xhr.send();
   xhr.onload = function() {
-    //console.log(data)
-    console.log(xhr.response)
     var jdocSettings = xhr.response
     let xhr2 = new XMLHttpRequest();
     xhr2.open("POST", "/api/rainbow_status");
@@ -311,5 +309,5 @@ function getCurrentSettings() {
 };
 };
 };
-}, 300);
+}, 800);
 };

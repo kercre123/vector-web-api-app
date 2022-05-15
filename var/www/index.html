@@ -293,7 +293,7 @@
 
 <hr>
 <div class="center">
-	<p>Temporary workaround for Escape Pod.Onboarding will not complete via the official method for now so use this button to skip it.</p>
+	<p>Temporary workaround for Escape Pod. Onboarding will not complete via the official method for now so use this button to skip it.</p>
 </div>
     <form method="post" action="/api/skip_onboarding" target="hiddenFrame">
       <button type="submit">Skip Onboarding</button>
@@ -301,9 +301,8 @@
 	
 <hr>
 <h2 class="center">Snore While Sleeping</h2>
-<div id="currentSnore" class="center">
+<div id="currentSnore" class="center"></div>
 <small>Note: This will restart the robot processes. The screen will be dark for around 10 seconds. Refresh this page after his eyes return.</small>
-</div>
 <ul>
 <li><button onclick="sendForm('/api/snore_enable')" type="submit">Enable</button></li>
 <li><button onclick="sendForm('/api/snore_disable')" type="submit">Disable</button></li>
@@ -312,10 +311,9 @@
 <hr>
 </div>
 </div>
-
-  </body>
-</html>
   <script src="./js/httprequest.js"></script>
   <script src="./js/iro.min.js"></script>
   <script src="./js/main.js"></script>
   <iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe>
+</body>
+</html>

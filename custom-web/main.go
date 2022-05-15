@@ -15,15 +15,18 @@ import (
     b64 "encoding/base64"
     "crypto/tls"
     "errors"
+    "github.com/rgamba/evtwebsocket"
 
 )
 
 var transCfg = &http.Transport{
- TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore expired SSL certificates
+   TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
 }
 
 var serverFiles = "/var/www"
 var interfaceLocation = "/sbin/custom-web-interface"
+const address string = "localhost:8888"
+
 
 func sdkAuth(username string, password string) string {
     cmd1 := exec.Command("/bin/rm", "-rf", "/data/protected")
@@ -48,7 +51,7 @@ func sdkAuth(username string, password string) string {
         authStatus := "error"
         return authStatus
     } else if strings.Contains(sessionsResponse, "session_token") {
-       type SessionsResponses struct {
+     type SessionsResponses struct {
         Session struct {
             SessionToken string    `json:"session_token"`
             UserID       string    `json:"user_id"`
@@ -98,12 +101,22 @@ func sdkAuth(username string, password string) string {
         panic(err)
     }
     defer resp.Body.Close()
+    log.Println(resp.Status)
+    fmt.Println("response Status:", resp.Status)
+    fmt.Println("response Headers:", resp.Header)
     if strings.Contains(resp.Status, "401") {
         cmd1.Run()
         return "error2"
+        os.WriteFile("/data/protected/authStatus", []byte("noguid"), 0644)
+    }
+    if strings.Contains(resp.Status, "403") {
+        cmd1.Run()
+        return "error2"
+        os.WriteFile("/data/protected/authStatus", []byte("noguid"), 0644)
     }
     body, _ := ioutil.ReadAll(resp.Body)
     guidResponse := string(body)
+    fmt.Println("response Body:", guidResponse)
     type GUIDRJson struct {
         Status struct {
             Code int `json:"code"`
@@ -113,6 +126,10 @@ func sdkAuth(username string, password string) string {
     }
     var guid GUIDRJson
     json.Unmarshal([]byte(guidResponse), &guid)
+    if guid.Code == 0 {
+        return "error2"
+        os.WriteFile("/data/protected/authStatus", []byte("noguid"), 0644)
+    }
     clientGUIDenc := guid.ClientTokenGUID
     clientGUIDdec, _ := b64.StdEncoding.DecodeString(clientGUIDenc)
     clientGUID := string(clientGUIDdec)
@@ -166,7 +183,45 @@ func setCustomEyeColor(hue string, sat string) {
     }
 }
 
-func setSettingSDK(setting string, value string) {
+func setPresetEyeColor(value string) {
+    clientGUID := getGUID()
+    if !strings.Contains(clientGUID, "error") {
+        url := "https://localhost:443/v1/update_settings"
+        var updateJSON = []byte(`{"update_settings": true, "settings": {"custom_eye_color": {"enabled": false}, "eye_color": ` + value + `} }`)
+        req, err := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
+        req.Header.Set("Authorization", "Bearer " + clientGUID)
+        req.Header.Set("Content-Type", "application/json")
+        client := &http.Client{Transport: transCfg}
+        resp, err := client.Do(req)
+        if err != nil {
+            panic(err)
+        }
+        defer resp.Body.Close()
+    } else {
+        log.Println("GUID not there")
+    }
+}
+
+func setSettingSDKstring(setting string, value string) {
+    clientGUID := getGUID()
+    if !strings.Contains(clientGUID, "error") {
+        url := "https://localhost:443/v1/update_settings"
+        var updateJSON = []byte(`{"update_settings": true, "settings": {"` + setting + `": "` + value + `" } }`)
+        req, err := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
+        req.Header.Set("Authorization", "Bearer " + clientGUID)
+        req.Header.Set("Content-Type", "application/json")
+        client := &http.Client{Transport: transCfg}
+        resp, err := client.Do(req)
+        if err != nil {
+            panic(err)
+        }
+        defer resp.Body.Close()
+    } else {
+        log.Println("GUID not there")
+    }
+}
+
+func setSettingSDKintbool(setting string, value string) {
     clientGUID := getGUID()
     if !strings.Contains(clientGUID, "error") {
         url := "https://localhost:443/v1/update_settings"
@@ -187,21 +242,51 @@ func setSettingSDK(setting string, value string) {
 
 func getAuthStatus() string {
     if _, err := os.Stat("/data/protected/authStatus"); err == nil {
-            fileBytes, err := ioutil.ReadFile("/data/protected/authStatus")
-            if err != nil {
-                return "unknown"
-            }
-            authStatusFileString := string(fileBytes)
-            if strings.Contains(authStatusFileString, "success") {
-                return "authorized"
-            } else {
-                return "notauthorized2"
-            }
-} else if errors.Is(err, os.ErrNotExist) {
-  return "notauthorized1"
-} else {
+        fileBytes, err := ioutil.ReadFile("/data/protected/authStatus")
+        if err != nil {
+            return "unknown"
+        }
+        authStatusFileString := string(fileBytes)
+        if strings.Contains(authStatusFileString, "success") {
+            return "authorized"
+        } else if strings.Contains(authStatusFileString, "noguid") {
+            return "notauthorized2"
+        } else {
+            return "unknown"
+        }
+    } else if errors.Is(err, os.ErrNotExist) {
+      return "notauthorized1"
+  } else {
     return "notauthorized1"
 }
+}
+
+func launchIntent(intent string) {
+  c := evtwebsocket.Conn{}
+  // Connect
+  c.Dial("ws://localhost:8888/socket", "")
+    msg := evtwebsocket.Msg{
+        Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"` + intent + `"}}`),
+    }
+    c.Send(msg)
+}
+
+func setTimer(seconds string) {
+    c := evtwebsocket.Conn{}
+    c.Dial("ws://localhost:8888/socket", "")
+        msg := evtwebsocket.Msg{
+            Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_clock_settimer_extend\", \"parameters\" : \"{\\\"timer_duration\\\":\\\"` + seconds + `'\\\",\\\"unit\\\":\\\"s\\\"}\\n\"}"}}`),
+        }
+        c.Send(msg)
+    }
+
+func stopTimer() {
+    c := evtwebsocket.Conn{}
+    c.Dial("ws://localhost:8888/socket", "")
+        msg := evtwebsocket.Msg{
+            Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_global_stop_extend\", \"metadata\" : \"text: stop the timer  confidence: 0.000000  handler: HOUNDIFY\", \"parameters\" : \"{\\\"entity_behavior_stoppable\\\":\\\"timer\\\"}\\n\", \"time\" : 1649608984, \"type\" : \"result\" }"}}`),
+        }
+    c.Send(msg)
 }
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
@@ -217,20 +302,17 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         return
     case r.URL.Path == "/api/cloud_intent":
         intent := r.FormValue("intent")
-        cmd := exec.Command("/bin/bash", interfaceLocation, "cloud_intent", intent)
-        cmd.Run()
+        launchIntent(intent)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/set_timer":
         secs := r.FormValue("secs")
-        cmd := exec.Command("/bin/bash", interfaceLocation, "set_timer", secs)
-        cmd.Run()
+        setTimer(secs)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/eye_color":
         eye_color := r.FormValue("color")
-        cmd := exec.Command("/bin/bash", interfaceLocation, "eye_color", eye_color)
-        cmd.Run()
+        setPresetEyeColor(eye_color)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/custom_eye_color":
@@ -241,55 +323,26 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         return
     case r.URL.Path == "/api/volume":
         volume := r.FormValue("volume")
-        cmd := exec.Command("/bin/bash", interfaceLocation, "volume", volume)
-        cmd.Run()
+        setSettingSDKintbool("master_volume", volume)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/locale":
         locale := r.FormValue("locale")
-        cmd := exec.Command("/bin/bash", interfaceLocation, "locale", locale)
-        cmd.Run()
-        fmt.Fprintf(w, "done")
-        return
-    case r.URL.Path == "/api/temp_format":
-        format := r.FormValue("format")
-        cmd := exec.Command("/bin/bash", interfaceLocation, "temp_format", format)
-        cmd.Run()
-        fmt.Fprintf(w, "done")
-        return
-    case r.URL.Path == "/api/time_format":
-        format := r.FormValue("format")
-        cmd := exec.Command("/bin/bash", interfaceLocation, "time_format", format)
-        cmd.Run()
-        fmt.Fprintf(w, "done")
-        return
-    case r.URL.Path == "/api/button":
-        button := r.FormValue("button")
-        cmd := exec.Command("/bin/bash", interfaceLocation, "button", button)
-        cmd.Run()
-        fmt.Fprintf(w, "done")
-        return
-    case r.URL.Path == "/api/units":
-        units := r.FormValue("units")
-        cmd := exec.Command("/bin/bash", interfaceLocation, "units", units)
-        cmd.Run()
+        setSettingSDKstring("locale", locale)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/location":
         text := r.FormValue("text")
-        cmd := exec.Command("/bin/bash", interfaceLocation, "location", "'", text, "'")
-        cmd.Run()
+        setSettingSDKstring("default_location", text)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/timezone":
         text := r.FormValue("text")
-        cmd := exec.Command("/bin/bash", interfaceLocation, "timezone", "'", text, "'")
-        cmd.Run()
+        setSettingSDKstring("time_zone", text)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/stop_timer":
-        cmd := exec.Command("/bin/bash", interfaceLocation, "stop_timer")
-        cmd.Run()
+        stopTimer()
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/snap_pic":
@@ -302,17 +355,11 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, authStatus)
         return
     case r.URL.Path == "/api/snore_status":
-        cmd := exec.Command("/bin/bash", interfaceLocation, "snore_status")
-        cmd.Run()
-        fileBytes, err := ioutil.ReadFile("/tmp/snoreStatus")
-        if err != nil {
-            fmt.Fprintf(w, "error getting status (file not there)")
+        if _, err := os.Stat("/data/protected/authStatus"); err == nil {
+            fmt.Fprintf(w, "off")
+        } else {
+            fmt.Fprintf(w, "on")
         }
-        w.WriteHeader(http.StatusOK)
-        w.Header().Set("Content-Type", "application/octet-stream")
-        w.Write(fileBytes)
-        cmd2 := exec.Command("/bin/rm", "/tmp/snoreStatus")
-        cmd2.Run()
         return
     case r.URL.Path == "/api/get_current_settings":
         fileBytes, err := ioutil.ReadFile("/data/data/com.anki.victor/persistent/jdocs/vic.RobotSettings.json")
@@ -324,30 +371,18 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         w.Write(fileBytes)
         return
     case r.URL.Path == "/api/rainbow_status":
-        cmd := exec.Command("/bin/bash", interfaceLocation, "rainbow_status")
-        cmd.Run()
-        fileBytes, err := ioutil.ReadFile("/tmp/rainbowStatus")
-        if err != nil {
-            fmt.Fprintf(w, "error getting status (file not there)")
+        if _, err := os.Stat("/data/data/rainboweyes"); err == nil {
+            fmt.Fprintf(w, "on")
+        } else {
+            fmt.Fprintf(w, "off")
         }
-        w.WriteHeader(http.StatusOK)
-        w.Header().Set("Content-Type", "application/octet-stream")
-        w.Write(fileBytes)
-        cmd2 := exec.Command("/bin/rm", "/tmp/rainbowStatus")
-        cmd2.Run()
         return
     case r.URL.Path == "/api/server_status":
-        cmd := exec.Command("/bin/bash", interfaceLocation, "server_status")
-        cmd.Run()
-        fileBytes, err := ioutil.ReadFile("/tmp/serverStatus")
-        if err != nil {
-            fmt.Fprintf(w, "error getting status (file not there)")
+        if _, err := os.Stat("/wirefiles/escape"); err == nil {
+            fmt.Fprintf(w, "escape")
+        } else {
+            fmt.Fprintf(w, "prod")
         }
-        w.WriteHeader(http.StatusOK)
-        w.Header().Set("Content-Type", "application/octet-stream")
-        w.Write(fileBytes)
-        cmd2 := exec.Command("/bin/rm", "/tmp/serverStatus")
-        cmd2.Run()
         return
     case r.URL.Path == "/api/rainbow_on":
         cmd := exec.Command("/bin/bash", "/sbin/vector-ctrl", "rainbowon")
@@ -370,13 +405,11 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         cmd.Run()
         return
     case r.URL.Path == "/api/time_format_12":
-        cmd := exec.Command("/bin/bash", interfaceLocation, "time_format_12")
-        cmd.Run()
+        setSettingSDKintbool("clock_24_hour", "false")
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/time_format_24":
-        cmd := exec.Command("/bin/bash", interfaceLocation, "time_format_24")
-        cmd.Run()
+        setSettingSDKintbool("clock_24_hour", "true")
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/skip_onboarding":
@@ -385,23 +418,19 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/temp_c":
-        cmd := exec.Command("/bin/bash", interfaceLocation, "temp_c")
-        cmd.Run()
+        setSettingSDKintbool("temp_is_fahrenheit", "false")
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/temp_f":
-        cmd := exec.Command("/bin/bash", interfaceLocation, "temp_f")
-        cmd.Run()
+        setSettingSDKintbool("temp_is_fahrenheit", "true")
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/button_hey_vector":
-        cmd := exec.Command("/bin/bash", interfaceLocation, "button_hey_vector")
-        cmd.Run()
+        setSettingSDKintbool("button_wakeword", "0")
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/button_alexa":
-        cmd := exec.Command("/bin/bash", interfaceLocation, "button_alexa")
-        cmd.Run()
+        setSettingSDKintbool("button_wakeword", "1")
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/server_escape":

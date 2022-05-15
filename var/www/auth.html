@@ -22,7 +22,12 @@
     <div id=authResult></div>
     <hr>
     <div class="center">
-	<p>If Vector is on the onboarding screen, click here to skip it.</p>
+    <p>If you are having issues ("account is valid, robot did not accept" error), click here to unauthenticate the robot and put him back into onboarding mode, then use this app or the Vector mobile app to reauthenticate him with an Anki account. This will not clear robot stats.</p>
+    </div>
+    <button onclick="certReset()" type="submit">Unauthenticate</button>
+    <hr>
+    <div class="center">
+	<p>If Vector is on the onboarding screen, click here to skip it after you have authenticated.</p>
 	</div>	
     <form method="post" action="/api/skip_onboarding" target="hiddenFrame">
       <button type="submit">Skip Onboarding</button>
