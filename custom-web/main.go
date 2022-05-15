@@ -20,13 +20,13 @@ import (
 )
 
 var transCfg = &http.Transport{
-   TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
+ TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
 }
 
 var serverFiles = "/var/www"
 var interfaceLocation = "/sbin/custom-web-interface"
 const address string = "localhost:8888"
-
+var c = evtwebsocket.Conn{}
 
 func sdkAuth(username string, password string) string {
     cmd1 := exec.Command("/bin/rm", "-rf", "/data/protected")
@@ -51,7 +51,7 @@ func sdkAuth(username string, password string) string {
         authStatus := "error"
         return authStatus
     } else if strings.Contains(sessionsResponse, "session_token") {
-     type SessionsResponses struct {
+       type SessionsResponses struct {
         Session struct {
             SessionToken string    `json:"session_token"`
             UserID       string    `json:"user_id"`
@@ -147,12 +147,11 @@ func sdkAuth(username string, password string) string {
     os.WriteFile("/data/protected/client.guid", clientGUIDdec, 0644)
     os.WriteFile("/data/protected/authStatus", []byte("success"), 0644)
     return "success"
-
-} else {
-    cmd1.Run()
+    } else {
+        cmd1.Run()
+        return "unknown"
+    }
     return "unknown"
-}
-return "unknown"
 }
 
 func getGUID() string {
@@ -262,9 +261,6 @@ func getAuthStatus() string {
 }
 
 func launchIntent(intent string) {
-  c := evtwebsocket.Conn{}
-  // Connect
-  c.Dial("ws://localhost:8888/socket", "")
     msg := evtwebsocket.Msg{
         Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"` + intent + `"}}`),
     }
@@ -272,20 +268,16 @@ func launchIntent(intent string) {
 }
 
 func setTimer(seconds string) {
-    c := evtwebsocket.Conn{}
-    c.Dial("ws://localhost:8888/socket", "")
-        msg := evtwebsocket.Msg{
-            Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_clock_settimer_extend\", \"parameters\" : \"{\\\"timer_duration\\\":\\\"` + seconds + `'\\\",\\\"unit\\\":\\\"s\\\"}\\n\"}"}}`),
-        }
-        c.Send(msg)
+    msg := evtwebsocket.Msg{
+        Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_clock_settimer_extend\", \"parameters\" : \"{\\\"timer_duration\\\":\\\"` + seconds + `'\\\",\\\"unit\\\":\\\"s\\\"}\\n\"}"}}`),
     }
+    c.Send(msg)
+}
 
 func stopTimer() {
-    c := evtwebsocket.Conn{}
-    c.Dial("ws://localhost:8888/socket", "")
-        msg := evtwebsocket.Msg{
-            Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_global_stop_extend\", \"metadata\" : \"text: stop the timer  confidence: 0.000000  handler: HOUNDIFY\", \"parameters\" : \"{\\\"entity_behavior_stoppable\\\":\\\"timer\\\"}\\n\", \"time\" : 1649608984, \"type\" : \"result\" }"}}`),
-        }
+    msg := evtwebsocket.Msg{
+        Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_global_stop_extend\", \"metadata\" : \"text: stop the timer  confidence: 0.000000  handler: HOUNDIFY\", \"parameters\" : \"{\\\"entity_behavior_stoppable\\\":\\\"timer\\\"}\\n\", \"time\" : 1649608984, \"type\" : \"result\" }"}}`),
+    }
     c.Send(msg)
 }
 
@@ -459,6 +451,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func main() {
+    c.Dial("ws://localhost:8888/socket", "")
     http.HandleFunc("/api/", apiHandler)
     fileServer := http.FileServer(http.Dir(serverFiles))
     http.Handle("/", fileServer)
