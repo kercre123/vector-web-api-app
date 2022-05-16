@@ -8,312 +8,338 @@
 <body>
 
 
-<div id="outer">
-<div id="content" class="">
-  <h1 class="center">Vector Web App</h1>
-  <hr>
-  <h3 class="center">Notices:</h3>
-    <div class="center" id="authStatus"></div>
-    <hr>
+  <div id="outer">
+    <div id="content" class="">
+      <h1 class="center">Vector Web App</h1>
+      <hr>
+      <h3 class="center">Notices:</h3>
+      <div class="center" id="authStatus"></div>
+      <hr>
       <a class="center" href="/info.html">General notes about this app</a>
-    <hr>
-    <h2 class="center">Volume</h2>
-    <div id="currentVolume" class="center"></div>
-        <ul>
-          <li><button onclick="sendForm('/api/volume?volume=0')" type="submit">Mute</button></li>
-          <li><button onclick="sendForm('/api/volume?volume=1')" type="submit">Low</button></li>
-          <li><button onclick="sendForm('/api/volume?volume=2')" type="submit">Medium Low</button></li>
-          <li><button onclick="sendForm('/api/volume?volume=3')" type="submit">Medium</button></li>
-          <li><button onclick="sendForm('/api/volume?volume=4')" type="submit">Medium High</button></li>
-          <li><button onclick="sendForm('/api/volume?volume=5')" type="submit">High</button></li>
-        </ul>
-    <hr>
-    <h2 class="center">Eye Color</h2>
-    <div id="currentEyeColor" class="center"></div>
-    <h4 class="center">Preset Eye Colors:</h4>
-        <ul>
-          <li><button onclick="sendForm('/api/eye_color?color=0')" type="submit">Teal</button></li>
-          <li><button onclick="sendForm('/api/eye_color?color=1')" type="submit">Orange</button></li>
-          <li><button onclick="sendForm('/api/eye_color?color=2')" type="submit">Yellow</button></li>
-          <li><button onclick="sendForm('/api/eye_color?color=3')" type="submit">Lime Green</button></li>
-          <li><button onclick="sendForm('/api/eye_color?color=4')" type="submit">Azure Blue</button></li>
-          <li><button onclick="sendForm('/api/eye_color?color=5')" type="submit">Purple</button></li>
-          <li><button onclick="sendForm('/api/eye_color?color=6')" type="submit">White</button></li>
-        </ul>
-    <h4 class="center">Custom Eye Color:</h4>
-    <div class="center" id="picker"></div><br />
-    <button class="settings" onclick="sendCustomColor()">Submit</button>
-    <h4 class="center">Rainbow Eyes:</h4>
+      <hr>
+      <h2 class="center">Volume</h2>
+      <div id="currentVolume" class="center"></div>
+      <ul>
+        <li><button onclick="sendForm('/api/volume?volume=0')" type="submit">Mute</button></li>
+        <li><button onclick="sendForm('/api/volume?volume=1')" type="submit">Low</button></li>
+        <li><button onclick="sendForm('/api/volume?volume=2')" type="submit">Medium Low</button></li>
+        <li><button onclick="sendForm('/api/volume?volume=3')" type="submit">Medium</button></li>
+        <li><button onclick="sendForm('/api/volume?volume=4')" type="submit">Medium High</button></li>
+        <li><button onclick="sendForm('/api/volume?volume=5')" type="submit">High</button></li>
+      </ul>
+      <hr>
+      <h2 class="center">Eye Color</h2>
+      <div id="currentEyeColor" class="center"></div>
+      <h4 class="center">Preset Eye Colors:</h4>
+      <ul>
+        <li><button onclick="sendForm('/api/eye_color?color=0')" type="submit">Teal</button></li>
+        <li><button onclick="sendForm('/api/eye_color?color=1')" type="submit">Orange</button></li>
+        <li><button onclick="sendForm('/api/eye_color?color=2')" type="submit">Yellow</button></li>
+        <li><button onclick="sendForm('/api/eye_color?color=3')" type="submit">Lime Green</button></li>
+        <li><button onclick="sendForm('/api/eye_color?color=4')" type="submit">Azure Blue</button></li>
+        <li><button onclick="sendForm('/api/eye_color?color=5')" type="submit">Purple</button></li>
+        <li><button onclick="sendForm('/api/eye_color?color=6')" type="submit">White</button></li>
+      </ul>
+      <h4 class="center">Custom Eye Color:</h4>
+      <div class="center" id="picker"></div><br />
+      <button class="settings" onclick="sendCustomColor()">Submit</button>
+      <h4 class="center">Rainbow Eyes:</h4>
       <ul>
         <li><button onclick="sendForm('/api/rainbow_on')" type="submit">Rainbow On</button></li>
         <li><button onclick="sendFormRainbowOff('/api/rainbow_off')" type="submit">Rainbow Off</button></li>
       </ul>
-    <hr>
-    <h2 class="center">Quick Actions</h2>
-    <form method="POST" action="/api/cloud_intent?intent=intent_explore_start" target="hiddenFrame">
-      <button type="submit">Explore Start</button>
-    </form>
-    <form method="POST" action="/api/cloud_intent?intent=intent_imperative_dance" target="hiddenFrame">
-      <button type="submit">Listen for Beat</button>
-    </form>
-    <form method="POST" action="/api/cloud_intent?intent=intent_system_sleep" target="hiddenFrame">
-      <button type="submit">Go to Sleep</button>
-    </form>
-    <form method="POST" action="/api/cloud_intent?intent=intent_greeting_goodnight" target="hiddenFrame">
-      <button type="submit">Goodnight</button>
-    </form>
-    <hr>
-    <h2 class="center">BlackJack</h2>
-    <form method="POST" action="/api/cloud_intent?intent=intent_play_blackjack" target="hiddenFrame">
-      <button type="submit">Play Blackjack</button>
-    </form>
-    <form method="POST" action="/api/cloud_intent?intent=intent_blackjack_hit" target="hiddenFrame">
-      <button type="submit">Hit</button>
-    </form>
-    <form method="POST" action="/api/cloud_intent?intent=intent_blackjack_stand" target="hiddenFrame">
-      <button type="submit">Stand</button>
-    </form>
-    <form method="POST" action="/api/cloud_intent?intent=intent_blackjack_playagain" target="hiddenFrame">
-      <button type="submit">Play Again</button>
-    </form>
-    <form method="POST" action="/api/cloud_intent?intent=intent_imperative_negative" target="hiddenFrame">
-      <button type="submit">Don't Play Again</button>
-    </form>
-    <hr>
-    <h2 class="center">All Intents</h2>
-    <div class="dropdown">
-      <button class="dropbtn">Hover Over This</button>
-      <div class="dropdown-content">
-        <ul>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_amazon_signin" target="hiddenFrame"> 
-            <button type="submit">Signin Alexa</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_amazon_signout" target="hiddenFrame"> 
-            <button type="submit">Signout Alexa</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_play_anytrick" target="hiddenFrame"> 
-            <button type="submit">Do Trick</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_play_anygame" target="hiddenFrame"> 
-            <button type="submit">Play Game</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_play_blackjack" target="hiddenFrame"> 
-            <button type="submit">Play BlackJack</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_play_fistbump" target="hiddenFrame"> 
-            <button type="submit">Fistbump</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_play_pickupcube" target="hiddenFrame"> 
-            <button type="submit">Pickup Cube</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_play_popawheelie" target="hiddenFrame"> 
-            <button type="submit">Pop A Wheelie</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_play_rollcube" target="hiddenFrame"> 
-            <button type="submit">Roll Cube</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_quiet" target="hiddenFrame"> 
-            <button type="submit">Be Quiet</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_shutup" target="hiddenFrame"> 
-            <button type="submit">Shut Up</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_come" target="hiddenFrame"> 
-            <button type="submit">Come Here</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_dance" target="hiddenFrame"> 
-            <button type="submit">Listen Beat</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_affirmative" target="hiddenFrame"> 
-            <button type="submit">Affirmative</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_negative" target="hiddenFrame"> 
-            <button type="submit">Negative</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_praise" target="hiddenFrame"> 
-            <button type="submit">Praise</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_apologize" target="hiddenFrame"> 
-            <button type="submit">Apology</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_scold" target="hiddenFrame"> 
-            <button type="submit">Scold</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_love" target="hiddenFrame"> 
-            <button type="submit">Love</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_abuse" target="hiddenFrame"> 
-            <button type="submit">Abuse</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_greeting_goodbye" target="hiddenFrame"> 
-            <button type="submit">Goodbye</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_greeting_goodmorning" target="hiddenFrame"> 
-            <button type="submit">Good Morning</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_greeting_goodnight" target="hiddenFrame"> 
-            <button type="submit">Goodnight</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_clock_checktimer" target="hiddenFrame"> 
-            <button type="submit">Check Timer</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_clock_time" target="hiddenFrame"> 
-            <button type="submit">Show Time</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_photo_take_extend" target="hiddenFrame"> 
-            <button type="submit">Take Photo</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_system_charger" target="hiddenFrame"> 
-            <button type="submit">Go Home</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_system_sleep" target="hiddenFrame"> 
-            <button type="submit">Sleep</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_explore_start" target="hiddenFrame"> 
-            <button type="submit">Explore Start</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_knowledge_promptquestion" target="hiddenFrame"> 
-            <button type="submit">KG Question</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_knowledge_no_response" target="hiddenFrame"> 
-            <button type="submit">KG Unknown</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_blackjack_hit" target="hiddenFrame"> 
-            <button type="submit">Blackjack Hit</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_blackjack_stand" target="hiddenFrame"> 
-            <button type="submit">Blackjack Stand</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_blackjack_playagain" target="hiddenFrame"> 
-            <button type="submit">Play Again</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_lookatme" target="hiddenFrame"> 
-            <button type="submit">Look At Me</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_findcube" target="hiddenFrame"> 
-            <button type="submit">Find Cube</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_names_ask" target="hiddenFrame"> 
-            <button type="submit">What Is Name</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_volumeup" target="hiddenFrame"> 
-            <button type="submit">Volume Up</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_volumedown" target="hiddenFrame"> 
-            <button type="submit">Volume Down</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_backup" target="hiddenFrame"> 
-            <button type="submit">Move Backwards</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_turnleft" target="hiddenFrame"> 
-            <button type="submit">Turn Left</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_turnright" target="hiddenFrame"> 
-            <button type="submit">Turn Right</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_turnaround" target="hiddenFrame"> 
-            <button type="submit">Turn Around</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_seasonal_happynewyear" target="hiddenFrame"> 
-            <button type="submit">Happy New Year</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_seasonal_happyholidays" target="hiddenFrame"> 
-            <button type="submit">Happy Holidays</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_character_age" target="hiddenFrame"> 
-            <button type="submit">Robot Age</button>
-          </form></li>
-          <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_eyecolor" target="hiddenFrame"> 
-            <button type="submit">Eye Color</button>
-          </form></li>
-        </ul>
+      <hr>
+      <h2 class="center">Quick Actions</h2>
+      <form method="POST" action="/api/cloud_intent?intent=intent_explore_start" target="hiddenFrame">
+        <button type="submit">Explore Start</button>
+      </form>
+      <form method="POST" action="/api/cloud_intent?intent=intent_imperative_dance" target="hiddenFrame">
+        <button type="submit">Listen for Beat</button>
+      </form>
+      <form method="POST" action="/api/cloud_intent?intent=intent_system_sleep" target="hiddenFrame">
+        <button type="submit">Go to Sleep</button>
+      </form>
+      <form method="POST" action="/api/cloud_intent?intent=intent_greeting_goodnight" target="hiddenFrame">
+        <button type="submit">Goodnight</button>
+      </form>
+      <hr>
+      <h2 class="center">BlackJack</h2>
+      <form method="POST" action="/api/cloud_intent?intent=intent_play_blackjack" target="hiddenFrame">
+        <button type="submit">Play Blackjack</button>
+      </form>
+      <form method="POST" action="/api/cloud_intent?intent=intent_blackjack_hit" target="hiddenFrame">
+        <button type="submit">Hit</button>
+      </form>
+      <form method="POST" action="/api/cloud_intent?intent=intent_blackjack_stand" target="hiddenFrame">
+        <button type="submit">Stand</button>
+      </form>
+      <form method="POST" action="/api/cloud_intent?intent=intent_blackjack_playagain" target="hiddenFrame">
+        <button type="submit">Play Again</button>
+      </form>
+      <form method="POST" action="/api/cloud_intent?intent=intent_imperative_negative" target="hiddenFrame">
+        <button type="submit">Don't Play Again</button>
+      </form>
+      <hr>
+      <h2 class="center">All Intents</h2>
+      <div class="dropdown">
+        <button class="dropbtn">Hover Over This</button>
+        <div class="dropdown-content">
+          <ul>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_amazon_signin" target="hiddenFrame"> 
+              <button type="submit">Signin Alexa</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_amazon_signout" target="hiddenFrame"> 
+              <button type="submit">Signout Alexa</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_play_anytrick" target="hiddenFrame"> 
+              <button type="submit">Do Trick</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_play_anygame" target="hiddenFrame"> 
+              <button type="submit">Play Game</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_play_blackjack" target="hiddenFrame"> 
+              <button type="submit">Play BlackJack</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_play_fistbump" target="hiddenFrame"> 
+              <button type="submit">Fistbump</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_play_pickupcube" target="hiddenFrame"> 
+              <button type="submit">Pickup Cube</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_play_popawheelie" target="hiddenFrame"> 
+              <button type="submit">Pop A Wheelie</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_play_rollcube" target="hiddenFrame"> 
+              <button type="submit">Roll Cube</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_quiet" target="hiddenFrame"> 
+              <button type="submit">Be Quiet</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_shutup" target="hiddenFrame"> 
+              <button type="submit">Shut Up</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_come" target="hiddenFrame"> 
+              <button type="submit">Come Here</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_dance" target="hiddenFrame"> 
+              <button type="submit">Listen Beat</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_affirmative" target="hiddenFrame"> 
+              <button type="submit">Affirmative</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_negative" target="hiddenFrame"> 
+              <button type="submit">Negative</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_praise" target="hiddenFrame"> 
+              <button type="submit">Praise</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_apologize" target="hiddenFrame"> 
+              <button type="submit">Apology</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_scold" target="hiddenFrame"> 
+              <button type="submit">Scold</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_love" target="hiddenFrame"> 
+              <button type="submit">Love</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_abuse" target="hiddenFrame"> 
+              <button type="submit">Abuse</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_greeting_goodbye" target="hiddenFrame"> 
+              <button type="submit">Goodbye</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_greeting_goodmorning" target="hiddenFrame"> 
+              <button type="submit">Good Morning</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_greeting_goodnight" target="hiddenFrame"> 
+              <button type="submit">Goodnight</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_clock_checktimer" target="hiddenFrame"> 
+              <button type="submit">Check Timer</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_clock_time" target="hiddenFrame"> 
+              <button type="submit">Show Time</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_photo_take_extend" target="hiddenFrame"> 
+              <button type="submit">Take Photo</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_system_charger" target="hiddenFrame"> 
+              <button type="submit">Go Home</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_system_sleep" target="hiddenFrame"> 
+              <button type="submit">Sleep</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_explore_start" target="hiddenFrame"> 
+              <button type="submit">Explore Start</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_knowledge_promptquestion" target="hiddenFrame"> 
+              <button type="submit">KG Question</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_knowledge_no_response" target="hiddenFrame"> 
+              <button type="submit">KG Unknown</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_blackjack_hit" target="hiddenFrame"> 
+              <button type="submit">Blackjack Hit</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_blackjack_stand" target="hiddenFrame"> 
+              <button type="submit">Blackjack Stand</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_blackjack_playagain" target="hiddenFrame"> 
+              <button type="submit">Play Again</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_lookatme" target="hiddenFrame"> 
+              <button type="submit">Look At Me</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_findcube" target="hiddenFrame"> 
+              <button type="submit">Find Cube</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_names_ask" target="hiddenFrame"> 
+              <button type="submit">What Is Name</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_volumeup" target="hiddenFrame"> 
+              <button type="submit">Volume Up</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_volumedown" target="hiddenFrame"> 
+              <button type="submit">Volume Down</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_backup" target="hiddenFrame"> 
+              <button type="submit">Move Backwards</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_turnleft" target="hiddenFrame"> 
+              <button type="submit">Turn Left</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_turnright" target="hiddenFrame"> 
+              <button type="submit">Turn Right</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_turnaround" target="hiddenFrame"> 
+              <button type="submit">Turn Around</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_seasonal_happynewyear" target="hiddenFrame"> 
+              <button type="submit">Happy New Year</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_seasonal_happyholidays" target="hiddenFrame"> 
+              <button type="submit">Happy Holidays</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_character_age" target="hiddenFrame"> 
+              <button type="submit">Robot Age</button>
+            </form></li>
+            <li><form method="post" action="/api/cloud_intent?intent=intent_imperative_eyecolor" target="hiddenFrame"> 
+              <button type="submit">Eye Color</button>
+            </form></li>
+          </ul>
+        </div>
       </div>
-    </div>
-    <hr>
-    <h2 class="center">Timer</h2>
-    <div class="center">
-	   <p>Set timer (seconds)</p>
-	</div>
-	<div class="center">
-    <form method="POST" action="/api/set_timer" target="hiddenFrame">
-      <input class="tinput" name="secs" type="text" placeholder="Put seconds here">
-      <input type="submit">
-    </form>
-	</div>
+      <hr>
+      <h2 class="center">Timer</h2>
+      <div class="center">
+        <form method="POST" action="/api/set_timer" target="hiddenFrame">
+          <input class="tinput" name="secs" type="text" placeholder="Put seconds here">
+          <input type="submit">
+        </form>
+      </div>
 
-    <form method="post" action="/api/cloud_intent?intent=intent_clock_checktimer" target="hiddenFrame"> 
-      <button type="submit">Check Timer</button>
-    </form>
+      <form method="post" action="/api/cloud_intent?intent=intent_clock_checktimer" target="hiddenFrame"> 
+        <button type="submit">Check Timer</button>
+      </form>
 
-    <form method="post" action="/api/stop_timer" target="hiddenFrame"> 
-      <button type="submit">Stop Timer</button>
-    </form>
-    <hr>
-<h2 class="center">Locale</h2>
-<div id="currentLocale" class="center"></div>
-<ul>
-<li><button onclick="sendForm('/api/locale?locale=en-US')" type="submit">English (US)</button></li>
-<li><button onclick="sendForm('/api/locale?locale=en-GB')" type="submit">English (GB)</button></li>
-<li><button onclick="sendForm('/api/locale?locale=en-AU')" type="submit">English (AU)</button></li>
-<li><button onclick="sendForm('/api/locale?locale=de-DE')" type="submit">German</button></li>
-<li><button onclick="sendForm('/api/locale?locale=fr-FR')" type="submit">French</button></li>
-<li><button onclick="sendForm('/api/locale?locale=ja-JP')" type="submit">Japanese</button></li>
-  </ul>
-<hr>
-<h2 class="center">Time Format</h2>
-<div id="currentTimeSet" class="center"></div>
-<ul>
-<li><button onclick="sendForm('/api/time_format_12')" type="submit">12 Hour</button></li>
-<li><button onclick="sendForm('/api/time_format_24')" type="submit">24 Hour</button></li>
-  </ul>
+      <form method="post" action="/api/stop_timer" target="hiddenFrame"> 
+        <button type="submit">Stop Timer</button>
+      </form>
+      <hr>
+      <h2 class="center">Locale</h2>
+      <div id="currentLocale" class="center"></div>
+      <ul>
+        <li><button onclick="sendForm('/api/locale?locale=en-US')" type="submit">English (US)</button></li>
+        <li><button onclick="sendForm('/api/locale?locale=en-GB')" type="submit">English (GB)</button></li>
+        <li><button onclick="sendForm('/api/locale?locale=en-AU')" type="submit">English (AU)</button></li>
+        <li><button onclick="sendForm('/api/locale?locale=de-DE')" type="submit">German</button></li>
+        <li><button onclick="sendForm('/api/locale?locale=fr-FR')" type="submit">French</button></li>
+        <li><button onclick="sendForm('/api/locale?locale=ja-JP')" type="submit">Japanese</button></li>
+      </ul>
+      <hr>
+      <h2 class="center">Time Format</h2>
+      <div id="currentTimeSet" class="center"></div>
+      <ul>
+        <li><button onclick="sendForm('/api/time_format_12')" type="submit">12 Hour</button></li>
+        <li><button onclick="sendForm('/api/time_format_24')" type="submit">24 Hour</button></li>
+      </ul>
 
-<hr>
-<h2 class="center">Temp Format</h2>
-<div id="currentTempFormat" class="center"></div>
-<ul>
-<li><button onclick="sendForm('/api/temp_c')" type="submit">Celsius</button></li>
-<li><button onclick="sendForm('/api/temp_f')" type="submit">Fahrenheit</button></li>
-  </ul>
+      <hr>
+      <h2 class="center">Temp Format</h2>
+      <div id="currentTempFormat" class="center"></div>
+      <ul>
+        <li><button onclick="sendForm('/api/temp_c')" type="submit">Celsius</button></li>
+        <li><button onclick="sendForm('/api/temp_f')" type="submit">Fahrenheit</button></li>
+      </ul>
 
-<hr>
-<h2 class="center">Button Action</h2>
-<div id="currentButton" class="center"></div>
-<ul>
-<li><button onclick="sendForm('/api/button_hey_vector')" type="submit">Hey Vector</button></li>
-<li><button onclick="sendForm('/api/button_alexa')" type="submit">Alexa</button></li>
-  </ul>
+      <hr>
+      <h2 class="center">Button Action</h2>
+      <div id="currentButton" class="center"></div>
+      <ul>
+        <li><button onclick="sendForm('/api/button_hey_vector')" type="submit">Hey Vector</button></li>
+        <li><button onclick="sendForm('/api/button_alexa')" type="submit">Alexa</button></li>
+      </ul>
 
-<hr>
-<h2 class="center">Server Environment</h2>
-<div id="currentServer" class="center"></div>
-<ul>
-<li><button class="serverProd" type="submit">Production</button></li>
-<li><button class="serverEscape" type="submit">Escape Pod</button></li>
-  </ul>
+      <hr>
+      <h2 class="center">Set Location</h2>
+      <div id="currentLocation" class="center"></div>
+      <small class="center">Example: San Francisco, California, United States</small>
+      <div class="center">
+        <form method="POST" action="/api/location" target="hiddenFrame">
+          <input class="tinput" name="location" type="text" placeholder="Put location here">
+          <input class="settings" type="submit">
+        </form>
+      </div>
+      <hr>
+      <h2 class="center">Set Time Zone</h2>
+      <div id="currentTimeZone" class="center"></div>
+      <small class="center">Example: America/Chicago</small>
+      <div class="center">
+        <form method="POST" action="/api/timezone" target="hiddenFrame">
+          <input class="tinput" name="timezone" type="text" placeholder="Put time zone here">
+          <input class="settings" type="submit">
+        </form>
+      </div>
+      <hr>
+      <h2 class="center">CPU/RAM Frequency</h2>
+      <div id="currentFreq" class="center"></div>
+      <small class="center">Performance setting may cause overheating and unexpected power-offs</small>
+      <ul>
+        <li><button onclick="sendForm('/api/freq?freq=performance')" type="submit">Performance (1.27 GHz CPU, 800 MHz RAM)</button></li>
+        <li><button onclick="sendForm('/api/freq?freq=balanced')" type="submit">Balanced (default) (733 MHz CPU, 500 MHz RAM)</button></li>
+        <li><button onclick="sendForm('/api/freq?freq=stock')" type="submit">Stock (533 MHz CPU, 400 MHz RAM)</button></li>
+      </ul>
+      <hr>
+      <h2 class="center">Server Environment</h2>
+      <div id="currentServer" class="center"></div>
+      <ul>
+        <li><button class="serverProd" type="submit">Production</button></li>
+        <li><button class="serverEscape" type="submit">Escape Pod</button></li>
+      </ul>
 
-<hr>
-<div class="center">
-	<p>Temporary workaround for Escape Pod. Onboarding will not complete via the official method for now so use this button to skip it.</p>
-</div>
-    <form method="post" action="/api/skip_onboarding" target="hiddenFrame">
+      <hr>
+      <div class="center">
+       <small class="center">Temporary workaround for Escape Pod. Onboarding will not complete via the official method for now so use this button to skip it.</small>
+     </div>
+     <form method="post" action="/api/skip_onboarding" target="hiddenFrame">
       <button type="submit">Skip Onboarding</button>
     </form>
-	
-<hr>
-<h2 class="center">Snore While Sleeping</h2>
-<div id="currentSnore" class="center"></div>
-<small>Note: This will restart the robot processes. The screen will be dark for around 10 seconds. Refresh this page after his eyes return.</small>
-<ul>
-<li><button onclick="sendForm('/api/snore_enable')" type="submit">Enable</button></li>
-<li><button onclick="sendForm('/api/snore_disable')" type="submit">Disable</button></li>
-</ul>
 
-<hr>
+    <hr>
+    <h2 class="center">Snore While Sleeping</h2>
+    <div id="currentSnore" class="center"></div>
+    <small class="center">This will restart the robot processes. The screen will be dark for around 10 seconds. Refresh this page after his eyes return.</small>
+    <ul>
+      <li><button onclick="sendForm('/api/snore_enable')" type="submit">Enable</button></li>
+      <li><button onclick="sendForm('/api/snore_disable')" type="submit">Disable</button></li>
+    </ul>
+
+    <hr>
+  </div>
 </div>
-</div>
-  <script src="./js/httprequest.js"></script>
-  <script src="./js/iro.min.js"></script>
-  <script src="./js/main.js"></script>
-  <iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe>
+<script src="./js/httprequest.js"></script>
+<script src="./js/iro.min.js"></script>
+<script src="./js/main.js"></script>
+<iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe>
 </body>
 </html>

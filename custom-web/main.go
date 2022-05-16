@@ -24,9 +24,21 @@ var transCfg = &http.Transport{
 }
 
 var serverFiles = "/var/www"
-var interfaceLocation = "/sbin/custom-web-interface"
 const address string = "localhost:8888"
 var c = evtwebsocket.Conn{}
+
+func skipOnboarding() {
+    url := "http://localhost:8888/consolefunccall"
+    var form = []byte("func=Exit Onboarding - Mark Complete&args=")
+    req, err := http.NewRequest("POST", url, bytes.NewBuffer(form))
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+    client := &http.Client{Transport: transCfg}
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+}
 
 func sdkAuth(username string, password string) string {
     cmd1 := exec.Command("/bin/rm", "-rf", "/data/protected")
@@ -146,12 +158,13 @@ func sdkAuth(username string, password string) string {
     defer resp2.Body.Close()
     os.WriteFile("/data/protected/client.guid", clientGUIDdec, 0644)
     os.WriteFile("/data/protected/authStatus", []byte("success"), 0644)
+    skipOnboarding()
     return "success"
-    } else {
-        cmd1.Run()
-        return "unknown"
-    }
+} else {
+    cmd1.Run()
     return "unknown"
+}
+return "unknown"
 }
 
 func getGUID() string {
@@ -260,6 +273,40 @@ func getAuthStatus() string {
 }
 }
 
+func getCustomSettings() string {
+    var snore string
+    var rainbowEyes string
+    var freqStatus string
+    var serverStatus string
+    var jsonResponse string
+    if _, err := os.Stat("/data/data/snore_disable"); err == nil {
+        snore = "off"
+    } else {
+        snore = "on"
+    }
+    if _, err := os.Stat("/data/data/rainboweyes"); err == nil {
+        rainbowEyes = "on"
+    } else {
+        rainbowEyes = "off"
+    }
+    if _, err := os.Stat("/data/data/freqStatus"); err == nil {
+        fileBytes, err := ioutil.ReadFile("/data/data/freqStatus")
+        if err != nil {
+            log.Println("no freq status")
+        }
+        freqStatus = string(fileBytes)
+    } else {
+        freqStatus = "balanced"
+    }
+    if _, err := os.Stat("/wirefiles/escape"); err == nil {
+        serverStatus = "escape"
+    } else {
+        serverStatus = "prod"
+    }
+    jsonResponse = `{"snore_status": "` + snore + `", "rainboweyes_status": "` + rainbowEyes + `", "freq_status": "` + freqStatus + `", "server_status": "` + serverStatus + `"}`
+    return jsonResponse
+}
+
 func launchIntent(intent string) {
     msg := evtwebsocket.Msg{
         Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"` + intent + `"}}`),
@@ -324,34 +371,22 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/location":
-        text := r.FormValue("text")
-        setSettingSDKstring("default_location", text)
+        location := r.FormValue("location")
+        setSettingSDKstring("default_location", location)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/timezone":
-        text := r.FormValue("text")
-        setSettingSDKstring("time_zone", text)
+        timezone := r.FormValue("timezone")
+        setSettingSDKstring("time_zone", timezone)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/stop_timer":
         stopTimer()
         fmt.Fprintf(w, "done")
         return
-    case r.URL.Path == "/api/snap_pic":
-        cmd := exec.Command("/bin/bash", "/anki/bin/vector-ctrl", "-pic")
-        cmd.Run()
-        fmt.Fprintf(w, "pic snapped, at /tmp/img.jpg, use /api/get_pic")
-        return
     case r.URL.Path == "/api/get_auth_status":
         authStatus := getAuthStatus()
         fmt.Fprintf(w, authStatus)
-        return
-    case r.URL.Path == "/api/snore_status":
-        if _, err := os.Stat("/data/protected/authStatus"); err == nil {
-            fmt.Fprintf(w, "off")
-        } else {
-            fmt.Fprintf(w, "on")
-        }
         return
     case r.URL.Path == "/api/get_current_settings":
         fileBytes, err := ioutil.ReadFile("/data/data/com.anki.victor/persistent/jdocs/vic.RobotSettings.json")
@@ -362,19 +397,9 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Content-Type", "application/octet-stream")
         w.Write(fileBytes)
         return
-    case r.URL.Path == "/api/rainbow_status":
-        if _, err := os.Stat("/data/data/rainboweyes"); err == nil {
-            fmt.Fprintf(w, "on")
-        } else {
-            fmt.Fprintf(w, "off")
-        }
-        return
-    case r.URL.Path == "/api/server_status":
-        if _, err := os.Stat("/wirefiles/escape"); err == nil {
-            fmt.Fprintf(w, "escape")
-        } else {
-            fmt.Fprintf(w, "prod")
-        }
+    case r.URL.Path == "/api/get_custom_settings":
+        settings := getCustomSettings()
+        fmt.Fprintf(w, settings)
         return
     case r.URL.Path == "/api/rainbow_on":
         cmd := exec.Command("/bin/bash", "/sbin/vector-ctrl", "rainbowon")
@@ -405,8 +430,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/skip_onboarding":
-        cmd := exec.Command("/bin/bash", interfaceLocation, "skip_onboarding")
-        cmd.Run()
+        skipOnboarding()
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/temp_c":
@@ -435,16 +459,26 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         cmd := exec.Command("/bin/bash", "/sbin/vector-ctrldd", "server_prod")
         cmd.Run()
         return
-    case r.URL.Path == "/api/get_pic":
-        fileBytes, err := ioutil.ReadFile("/tmp/img.jpg")
-        if err != nil {
-            panic(err)
+    case r.URL.Path == "/api/freq":
+        perfPreset := r.FormValue("freq")
+        if strings.Contains(perfPreset, "performance") {
+            cmd := exec.Command("/bin/bash", "/sbin/vector-ctrl", "freq", "1267200", "800000")
+            cmd.Run()
+            os.WriteFile("/data/data/freqStatus", []byte("performance"), 0644)
+            fmt.Fprintf(w, "done")
+        } else if strings.Contains(perfPreset, "balanced") {
+            cmd := exec.Command("/bin/bash", "/sbin/vector-ctrl", "freq", "733333", "500000")
+            cmd.Run()
+            os.WriteFile("/data/data/freqStatus", []byte("balanced"), 0644)
+            fmt.Fprintf(w, "done")
+        } else if strings.Contains(perfPreset, "stock") {
+            cmd := exec.Command("/bin/bash", "/sbin/vector-ctrl", "freq", "533333", "400000")
+            cmd.Run()
+            os.WriteFile("/data/data/freqStatus", []byte("stock"), 0644)
+            fmt.Fprintf(w, "done")
+        } else {
+            fmt.Fprintf(w, "must be performance, balanced, or stock")
         }
-        w.WriteHeader(http.StatusOK)
-        w.Header().Set("Content-Type", "application/octet-stream")
-        w.Write(fileBytes)
-        cmd := exec.Command("/bin/rm", "/tmp/img.jpg")
-        cmd.Run()
         return
     }
 }
@@ -452,13 +486,13 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
     c.Dial("ws://localhost:8888/socket", "")
-    http.HandleFunc("/api/", apiHandler)
-    fileServer := http.FileServer(http.Dir(serverFiles))
-    http.Handle("/", fileServer)
+        http.HandleFunc("/api/", apiHandler)
+        fileServer := http.FileServer(http.Dir(serverFiles))
+        http.Handle("/", fileServer)
 
 
-    fmt.Printf("Starting server at port 8080\n")
-    if err := http.ListenAndServe(":8080", nil); err != nil {
-        log.Fatal(err)
+        fmt.Printf("Starting server at port 8080\n")
+        if err := http.ListenAndServe(":8080", nil); err != nil {
+            log.Fatal(err)
+        }
     }
-}

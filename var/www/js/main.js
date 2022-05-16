@@ -18,6 +18,11 @@ document.querySelectorAll('.serverEscape').forEach(item => {
     }
   })
 })
+document.querySelectorAll('.settings').forEach(item => {
+  item.addEventListener('click', event => {
+    setTimeout(function(){getCurrentSettings()}, 1700)
+  })
+})
 document.querySelectorAll('.serverProd').forEach(item => {
   item.addEventListener('click', event => {
     let confirmAction = confirm("This will change Vector's server environment to Production (normal, stock). This will NOT clear user data but may affect the functionality of this web app and will restart onboarding. Vector's personality will remain intact. Would you like to continue?");
@@ -109,79 +114,95 @@ function sendCustomColor() {
 };
 
 function getCurrentSettings() {
-    setTimeout(function(){
-  let xhr = new XMLHttpRequest();
-  xhr.open("POST", "/api/get_current_settings");
-  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  xhr.setRequestHeader("Cache-Control", "no-cache, no-store, max-age=0");
-  xhr.responseType = 'json';
-  xhr.send();
-  xhr.onload = function() {
-    var jdocSettings = xhr.response
-    let xhr2 = new XMLHttpRequest();
-    xhr2.open("POST", "/api/rainbow_status");
-    xhr2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr2.setRequestHeader("Cache-Control", "no-cache, no-store, max-age=0");
-    xhr2.send();
-    xhr2.onload = function() {
-     var rainbowStatus = xhr2.response
-     res = rainbowStatus.replace(/\s/g,'');
-     if (`${res}` == "on") {
-      rainbowEye = "on"
-    } else {
-      rainbowEye = "off"
-    }
-    let xhr3 = new XMLHttpRequest();
-    xhr3.open("POST", "/api/server_status");
-    xhr3.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr3.setRequestHeader("Cache-Control", "no-cache, no-store, max-age=0");
-    xhr3.send();
-    xhr3.onload = function() {
-     var serverResponse = xhr3.response
-     res = serverResponse.replace(/\s/g,'');
-     if (`${res}` == "escape") {
-      serverStatus = "Escape Pod"
-    } else if (`${res}` == "prod") {
-      serverStatus = "Production"
-    } else {
-      serverStatus = "Unknown"
-    }
-    let xhr4 = new XMLHttpRequest();
-    xhr4.open("POST", "/api/snore_status");
-    xhr4.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr4.setRequestHeader("Cache-Control", "no-cache, no-store, max-age=0");
-    xhr4.send();
-    xhr4.onload = function() {
-      var snoreResponse = xhr4.response
-      res = snoreResponse.replace(/\s/g,'');
-      if (`${res}` == "on") {
-        snoreStatus = "Enabled"
-      } else {
-        snoreStatus = "Disabled"
-      }
-      if ( jdocSettings["jdoc"]["custom_eye_color"]) {
-        var customECE = jdocSettings["jdoc"]["custom_eye_color"]["enabled"]
-        var customECH = jdocSettings["jdoc"]["custom_eye_color"]["hue"]
-        var customECS = jdocSettings["jdoc"]["custom_eye_color"]["saturation"]
-      }
-      var eyeColorS = jdocSettings["jdoc"]["eye_color"]
-      var volumeS = jdocSettings["jdoc"]["master_volume"]
-      var localeS = jdocSettings["jdoc"]["locale"]
-      var timeSetS = jdocSettings["jdoc"]["clock_24_hour"]
-      var tempFormatS = jdocSettings["jdoc"]["temp_is_fahrenheit"]
-      var buttonS = jdocSettings["jdoc"]["button_wakeword"]
-      if (`${rainbowEye}` == "on") {
-       var eyeColorT = "Rainbow"
-     } else if ( jdocSettings["jdoc"]["custom_eye_color"]) {
-       if (`${customECE}` == "true") {
-         var setHue = customECH * 360
-         var setHue = setHue.toFixed(3)
-         var setSat = customECS * 100
-         var setSat = setSat.toFixed(3)
-         colorPicker.color.hsl = { h: setHue, s: setSat, l: 50 };     
-         var eyeColorT = "Custom"
-       } else { 
-         if (`${eyeColorS}` == 0) {
+  setTimeout(function(){
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/get_current_settings");
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Cache-Control", "no-cache, no-store, max-age=0");
+    xhr.responseType = 'json';
+    xhr.send();
+    xhr.onload = function() {
+      var jdocSdkSettings = xhr.response
+      let xhr2 = new XMLHttpRequest();
+      xhr2.open("POST", "/api/get_custom_settings");
+      xhr2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr2.setRequestHeader("Cache-Control", "no-cache, no-store, max-age=0");
+      xhr2.responseType = 'json';
+      xhr2.send();
+      xhr2.onload = function() {
+        var jdocCustomSettings = xhr2.response
+        var rainboweyes_status = jdocCustomSettings["rainboweyes_status"]
+        var snore_status = jdocCustomSettings["snore_status"]
+        var freq_status = jdocCustomSettings["freq_status"]
+        var server_status = jdocCustomSettings["server_status"]
+        if (`${rainboweyes_status}` == "on") {
+          rainbowEye = "on"
+        } else {
+          rainbowEye = "off"
+        }
+        if (`${server_status}` == "escape") {
+          serverStatus = "Escape Pod"
+        } else if (`${server_status}` == "prod") {
+          serverStatus = "Production"
+        } else {
+          serverStatus = "Unknown"
+        }
+        if (`${snore_status}` == "on") {
+          snoreStatus = "Enabled"
+        } else {
+          snoreStatus = "Disabled"
+        }
+        if (`${freq_status}` == "performance") {
+          freqStatus = "Performance"
+        } else if (`${freq_status}` == "balanced") {
+          freqStatus = "Balanced"
+        } else if (`${freq_status}` == "stock") {
+          freqStatus = "Stock"
+        } else {
+          freqStatus = "Unknown"
+        }
+        if ( jdocSdkSettings["jdoc"]["custom_eye_color"]) {
+          var customECE = jdocSdkSettings["jdoc"]["custom_eye_color"]["enabled"]
+          var customECH = jdocSdkSettings["jdoc"]["custom_eye_color"]["hue"]
+          var customECS = jdocSdkSettings["jdoc"]["custom_eye_color"]["saturation"]
+        }
+        var eyeColorS = jdocSdkSettings["jdoc"]["eye_color"]
+        var volumeS = jdocSdkSettings["jdoc"]["master_volume"]
+        var localeS = jdocSdkSettings["jdoc"]["locale"]
+        var timeSetS = jdocSdkSettings["jdoc"]["clock_24_hour"]
+        var tempFormatS = jdocSdkSettings["jdoc"]["temp_is_fahrenheit"]
+        var buttonS = jdocSdkSettings["jdoc"]["button_wakeword"]
+        var location = jdocSdkSettings["jdoc"]["default_location"]
+        var timezone = jdocSdkSettings["jdoc"]["time_zone"]
+        if (`${rainbowEye}` == "on") {
+         var eyeColorT = "Rainbow"
+       } else if ( jdocSdkSettings["jdoc"]["custom_eye_color"]) {
+         if (`${customECE}` == "true") {
+           var setHue = customECH * 360
+           var setHue = setHue.toFixed(3)
+           var setSat = customECS * 100
+           var setSat = setSat.toFixed(3)
+           colorPicker.color.hsl = { h: setHue, s: setSat, l: 50 };     
+           var eyeColorT = "Custom"
+         } else { 
+           if (`${eyeColorS}` == 0) {
+            var eyeColorT = "Teal"
+          } else if  (`${eyeColorS}` == 1) {
+            var eyeColorT = "Orange"
+          } else if  (`${eyeColorS}` == 2) {
+            var eyeColorT = "Yellow"
+          } else if  (`${eyeColorS}` == 3) {
+            var eyeColorT = "Lime Green"
+          } else if  (`${eyeColorS}` == 4) {
+            var eyeColorT = "Azure Blue"
+          } else if  (`${eyeColorS}` == 5) {
+            var eyeColorT = "Purple"
+          } else if  (`${eyeColorS}` == 6) {
+            var eyeColorT = "White"
+          } else {
+            var eyeColorT = "none"
+          }  
+        } } else { if (`${eyeColorS}` == 0) {
           var eyeColorT = "Teal"
         } else if  (`${eyeColorS}` == 1) {
           var eyeColorT = "Orange"
@@ -194,76 +215,59 @@ function getCurrentSettings() {
         } else if  (`${eyeColorS}` == 5) {
           var eyeColorT = "Purple"
         } else if  (`${eyeColorS}` == 6) {
-          var eyeColorT = "Matrix Green"
+          var eyeColorT = "White"
         } else {
           var eyeColorT = "none"
-        }  
-      } } else { if (`${eyeColorS}` == 0) {
-        var eyeColorT = "Teal"
-      } else if  (`${eyeColorS}` == 1) {
-        var eyeColorT = "Orange"
-      } else if  (`${eyeColorS}` == 2) {
-        var eyeColorT = "Yellow"
-      } else if  (`${eyeColorS}` == 3) {
-        var eyeColorT = "Lime Green"
-      } else if  (`${eyeColorS}` == 4) {
-        var eyeColorT = "Azure Blue"
-      } else if  (`${eyeColorS}` == 5) {
-        var eyeColorT = "Purple"
-      } else if  (`${eyeColorS}` == 6) {
-        var eyeColorT = "Matrix Green"
-      } else {
-        var eyeColorT = "none"
-      } }
-      function pEyeColorST() {
-       if (`${eyeColorS}` == 0) {
-        var eyeColorT = "Teal"
-      } else if (`${eyeColorS}` == 1) {
-        var eyeColorT = "Orange"
-      } else if (`${eyeColorS}` == 2) {
-        var eyeColorT = "Yellow"
-      } else if (`${eyeColorS}` == 3) {
-        var eyeColorT = "Lime Green"
-      } else if (`${eyeColorS}` == 4) {
-        var eyeColorT = "Azure Blue"
-      } else if (`${eyeColorS}` == 5) {
-        var eyeColorT = "Purple"
-      } else if (`${eyeColorS}` == 6) {
-        var eyeColorT = "Matrix Green"
-      } else {
-        var eyeColorT = "none"
+        } }
+        function pEyeColorST() {
+         if (`${eyeColorS}` == 0) {
+          var eyeColorT = "Teal"
+        } else if (`${eyeColorS}` == 1) {
+          var eyeColorT = "Orange"
+        } else if (`${eyeColorS}` == 2) {
+          var eyeColorT = "Yellow"
+        } else if (`${eyeColorS}` == 3) {
+          var eyeColorT = "Lime Green"
+        } else if (`${eyeColorS}` == 4) {
+          var eyeColorT = "Azure Blue"
+        } else if (`${eyeColorS}` == 5) {
+          var eyeColorT = "Purple"
+        } else if (`${eyeColorS}` == 6) {
+          var eyeColorT = "White"
+        } else {
+          var eyeColorT = "none"
+        }
       }
-    }
-    if (`${volumeS}` == 0) {
-      var volumeT = "Mute"
-    } else if (`${volumeS}` == 1) {
-      var volumeT = "Low"
-    } else if (`${volumeS}` == 2) {
-      var volumeT = "Medium Low"
-    } else if (`${volumeS}` == 3) {
-      var volumeT = "Medium"
-    } else if (`${volumeS}` == 4) {
-      var volumeT = "Medium High"
-    } else if (`${volumeS}` == 5) {
-      var volumeT = "High"
-    } else {
-      var volumeT = "none"
-    }
-    if (`${timeSetS}` == "false") {
-      var timeSetT = "12 Hour"
-    } else {
-      var timeSetT = "24 Hour"
-    }
-    if (`${tempFormatS}` == "true") {
-      var tempFormatT = "Fahrenheit"
-    } else {
-      var tempFormatT = "Celcius"
-    }
-    if (`${buttonS}` == 0) {
-      var buttonT = "Hey Vector"
-    } else {
-      var buttonT = "Alexa"
-    }
+      if (`${volumeS}` == 0) {
+        var volumeT = "Mute"
+      } else if (`${volumeS}` == 1) {
+        var volumeT = "Low"
+      } else if (`${volumeS}` == 2) {
+        var volumeT = "Medium Low"
+      } else if (`${volumeS}` == 3) {
+        var volumeT = "Medium"
+      } else if (`${volumeS}` == 4) {
+        var volumeT = "Medium High"
+      } else if (`${volumeS}` == 5) {
+        var volumeT = "High"
+      } else {
+        var volumeT = "none"
+      }
+      if (`${timeSetS}` == "false") {
+        var timeSetT = "12 Hour"
+      } else {
+        var timeSetT = "24 Hour"
+      }
+      if (`${tempFormatS}` == "true") {
+        var tempFormatT = "Fahrenheit"
+      } else {
+        var tempFormatT = "Celcius"
+      }
+      if (`${buttonS}` == 0) {
+        var buttonT = "Hey Vector"
+      } else {
+        var buttonT = "Alexa"
+      }
   //s1 = volume, s2 = eye-color, s3 = locale
   var s1 = document.getElementById('currentVolume');
   const s1P = document.createElement('p');
@@ -305,9 +309,22 @@ function getCurrentSettings() {
   s8P.textContent = "Current Snore Setting: " + `${snoreStatus}`
   s8.innerHTML = ''
   s8.appendChild(s8P);
-};
-};
+  var s9 = document.getElementById('currentFreq');
+  const s9P = document.createElement('p');
+  s9P.textContent = "Current Performance Setting: " + `${freqStatus}`
+  s9.innerHTML = ''
+  s9.appendChild(s9P);
+  var s10 = document.getElementById('currentLocation');
+  const s10P = document.createElement('p');
+  s10P.textContent = "Current Location Setting: " + `${location}`
+  s10.innerHTML = ''
+  s10.appendChild(s10P);
+  var s11 = document.getElementById('currentTimeZone');
+  const s11P = document.createElement('p');
+  s11P.textContent = "Current Time Zone Setting: " + `${timezone}`
+  s11.innerHTML = ''
+  s11.appendChild(s11P);
 };
 };
 }, 800);
-};
+}
