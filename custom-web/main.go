@@ -195,6 +195,24 @@ func setCustomEyeColor(hue string, sat string) {
     }
 }
 
+func getSDKSettings() []byte {
+    clientGUID := getGUID()
+    url := "https://localhost:443/v1/update_settings"
+    var updateJSON = []byte(`{"update_settings": false}`)
+    req, err := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
+    req.Header.Set("Authorization", "Bearer " + clientGUID)
+    req.Header.Set("Content-Type", "application/json")
+    client := &http.Client{Transport: transCfg}
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+    body, _ := ioutil.ReadAll(resp.Body)
+    settingsResponse := body
+    return settingsResponse
+}
+
 func setPresetEyeColor(value string) {
     clientGUID := getGUID()
     if !strings.Contains(clientGUID, "error") {
@@ -253,6 +271,9 @@ func setSettingSDKintbool(setting string, value string) {
 }
 
 func getAuthStatus() string {
+    if _, err := os.Stat("/wirefiles/escape"); err == nil {
+        return "escapepod"
+    }
     if _, err := os.Stat("/data/protected/authStatus"); err == nil {
         fileBytes, err := ioutil.ReadFile("/data/protected/authStatus")
         if err != nil {
@@ -279,6 +300,8 @@ func getCustomSettings() string {
     var freqStatus string
     var serverStatus string
     var jsonResponse string
+    var alexaStatus string
+    var soundStatus string
     if _, err := os.Stat("/data/data/snore_disable"); err == nil {
         snore = "off"
     } else {
@@ -303,7 +326,21 @@ func getCustomSettings() string {
     } else {
         serverStatus = "prod"
     }
-    jsonResponse = `{"snore_status": "` + snore + `", "rainboweyes_status": "` + rainbowEyes + `", "freq_status": "` + freqStatus + `", "server_status": "` + serverStatus + `"}`
+    if _, err := os.Stat("/data/data/com.anki.victor/persistent/alexa/optedIn"); err == nil {
+        alexaStatus = "on"
+    } else {
+        alexaStatus = "off"
+    }
+    if _, err := os.Stat("/data/data/soundStatus"); err == nil {
+        fileBytes, err := ioutil.ReadFile("/data/data/soundStatus")
+        if err != nil {
+            log.Println("no sound status")
+        }
+        soundStatus = string(fileBytes)
+    } else {
+        soundStatus = "1.8.0.6051"
+    }
+    jsonResponse = `{"snore_status": "` + snore + `", "rainboweyes_status": "` + rainbowEyes + `", "freq_status": "` + freqStatus + `", "server_status": "` + serverStatus + `", "alexa_status": "` + alexaStatus + `", "sound_status": "` + soundStatus + `"}`
     return jsonResponse
 }
 
@@ -311,6 +348,7 @@ func launchIntent(intent string) {
     msg := evtwebsocket.Msg{
         Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"` + intent + `"}}`),
     }
+    log.Println(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"` + intent + `"}}`)
     c.Send(msg)
 }
 
@@ -388,14 +426,11 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         authStatus := getAuthStatus()
         fmt.Fprintf(w, authStatus)
         return
-    case r.URL.Path == "/api/get_current_settings":
-        fileBytes, err := ioutil.ReadFile("/data/data/com.anki.victor/persistent/jdocs/vic.RobotSettings.json")
-        if err != nil {
-            fmt.Fprintf(w, "error getting settings (file not there)")
-        }
+    case r.URL.Path == "/api/get_sdk_settings":
+        settings := getSDKSettings()
         w.WriteHeader(http.StatusOK)
         w.Header().Set("Content-Type", "application/octet-stream")
-        w.Write(fileBytes)
+        w.Write(settings)
         return
     case r.URL.Path == "/api/get_custom_settings":
         settings := getCustomSettings()
