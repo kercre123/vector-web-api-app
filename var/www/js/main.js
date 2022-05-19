@@ -93,26 +93,6 @@ function sendCustomColor() {
   };
 };
 
-function pEyeColorST() {
- if (`${eyeColorS}` == 0) {
-  eyeColorT = "Teal"
-} else if (`${eyeColorS}` == 1) {
-  eyeColorT = "Orange"
-} else if (`${eyeColorS}` == 2) {
-  eyeColorT = "Yellow"
-} else if (`${eyeColorS}` == 3) {
-  eyeColorT = "Lime Green"
-} else if (`${eyeColorS}` == 4) {
-  eyeColorT = "Azure Blue"
-} else if (`${eyeColorS}` == 5) {
-  eyeColorT = "Purple"
-} else if (`${eyeColorS}` == 6) {
-  eyeColorT = "White"
-} else {
-  eyeColorT = "none"
-}
-}
-
 function getCurrentSettings() {
   let xhr = new XMLHttpRequest();
   xhr.open("POST", "/api/get_sdk_settings");
@@ -137,6 +117,9 @@ function getCurrentSettings() {
       var snore_status = jdocCustomSettings["snore_status"]
       var freq_status = jdocCustomSettings["freq_status"]
       var server_status = jdocCustomSettings["server_status"]
+      var robot_name = jdocCustomSettings["robot_name"]
+      var robot_esn = jdocCustomSettings["robot_esn"]
+      var vicos_version = jdocCustomSettings["vicos_version"]
       if (`${rainboweyes_status}` == "on") {
         rainbowEye = "on"
       } else {
@@ -187,14 +170,43 @@ function getCurrentSettings() {
          colorPicker.color.hsl = { h: setHue, s: setSat, l: 50 };     
          var eyeColorT = "Custom"
        } else { 
-         pEyeColorST()
-       } } else { 
-        pEyeColorST()
+        if (`${eyeColorS}` == 0) {
+          eyeColorT = "Teal"
+        } else if (`${eyeColorS}` == 1) {
+          eyeColorT = "Orange"
+        } else if (`${eyeColorS}` == 2) {
+          eyeColorT = "Yellow"
+        } else if (`${eyeColorS}` == 3) {
+          eyeColorT = "Lime Green"
+        } else if (`${eyeColorS}` == 4) {
+          eyeColorT = "Azure Blue"
+        } else if (`${eyeColorS}` == 5) {
+          eyeColorT = "Purple"
+        } else if (`${eyeColorS}` == 6) {
+          eyeColorT = "White"
+        } else {
+          eyeColorT = "none"
+        }
+      } } else { 
+       if (`${eyeColorS}` == 0) {
+        eyeColorT = "Teal"
+      } else if (`${eyeColorS}` == 1) {
+        eyeColorT = "Orange"
+      } else if (`${eyeColorS}` == 2) {
+        eyeColorT = "Yellow"
+      } else if (`${eyeColorS}` == 3) {
+        eyeColorT = "Lime Green"
+      } else if (`${eyeColorS}` == 4) {
+        eyeColorT = "Azure Blue"
+      } else if (`${eyeColorS}` == 5) {
+        eyeColorT = "Purple"
+      } else if (`${eyeColorS}` == 6) {
+        eyeColorT = "White"
+      } else {
+        eyeColorT = "none"
       }
-      function pEyeColorST() {
-       pEyeColorST()
-     }
-     if (`${volumeS}` == 0) {
+    }
+    if (`${volumeS}` == 0) {
       var volumeT = "Mute"
     } else if (`${volumeS}` == 1) {
       var volumeT = "Low"
@@ -279,6 +291,21 @@ function getCurrentSettings() {
     s11P.textContent = "Current Time Zone Setting: " + `${timezone}`
     s11.innerHTML = ''
     s11.appendChild(s11P);
+    var s12 = document.getElementById('robotName');
+    const s12P = document.createElement('p');
+    s12P.textContent = "Robot Name: " + `${robot_name}`
+    s12.innerHTML = ''
+    s12.appendChild(s12P);
+    var s13 = document.getElementById('robotEsn');
+    const s13P = document.createElement('p');
+    s13P.textContent = "Robot Serial Number: " + `${robot_esn}`
+    s13.innerHTML = ''
+    s13.appendChild(s13P);
+    var s14 = document.getElementById('vicosVersion');
+    const s14P = document.createElement('p');
+    s14P.textContent = "VicOS Version: " + `${vicos_version}`
+    s14.innerHTML = ''
+    s14.appendChild(s14P);
   };
 };
 }

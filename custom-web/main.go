@@ -302,6 +302,9 @@ func getCustomSettings() string {
     var jsonResponse string
     var alexaStatus string
     var soundStatus string
+    var vicosVersion string
+    var robotName string
+    var serialNumber string
     if _, err := os.Stat("/data/data/snore_disable"); err == nil {
         snore = "off"
     } else {
@@ -340,7 +343,24 @@ func getCustomSettings() string {
     } else {
         soundStatus = "1.8.0.6051"
     }
-    jsonResponse = `{"snore_status": "` + snore + `", "rainboweyes_status": "` + rainbowEyes + `", "freq_status": "` + freqStatus + `", "server_status": "` + serverStatus + `", "alexa_status": "` + alexaStatus + `", "sound_status": "` + soundStatus + `"}`
+    cmd1 := exec.Command("/bin/bash", "/sbin/vector-ctrl", "info_print")
+    cmd1.Run()
+    versionBytes, err := ioutil.ReadFile("/data/data/vicosVersion")
+    if err != nil {
+        log.Println("no version string")
+    }
+    vicosVersion = strings.TrimSpace(string(versionBytes))
+    serialBytes, err := ioutil.ReadFile("/data/data/serialNumber")
+    if err != nil {
+        log.Println("no serial string")
+    }
+    serialNumber = strings.TrimSpace(string(serialBytes))
+    fileBytes, err := ioutil.ReadFile("/data/data/robotName")
+    if err != nil {
+        log.Println("no name string")
+    }
+    robotName = strings.TrimSpace(string(fileBytes))
+    jsonResponse = `{"snore_status": "` + snore + `", "rainboweyes_status": "` + rainbowEyes + `", "freq_status": "` + freqStatus + `", "server_status": "` + serverStatus + `", "alexa_status": "` + alexaStatus + `", "sound_status": "` + soundStatus + `", "vicos_version": "` + vicosVersion +`", "robot_esn": "` + serialNumber + `", "robot_name": "` + robotName +`"}`
     return jsonResponse
 }
 
