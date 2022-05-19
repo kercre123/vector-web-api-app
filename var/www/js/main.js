@@ -31,11 +31,20 @@ document.querySelectorAll('.serverProd').forEach(item => {
     let confirmAction = confirm("This will change Vector's server environment to Production (normal, stock). This will NOT clear user data but may affect the functionality of this web app and will restart onboarding. Vector's personality will remain intact. Would you like to continue?");
     if (confirmAction) {
       fetch("/api/server_prod")
-      alert("Executing. After a while, Vector's screen should show 'Configuring'. <<<Once Vector reaches the onboarding screen, press OK.>>> This will bring you to the auth page which will let you log the robot in with the cloud. You do not need to use the Vector mobile app.")
+      alert("Executing. After a while, Vector's screen should show 'Configuring'. <<<Once Vector reaches the onboarding screen (blinking V), press OK.>>> This will bring you to the auth page which will let you log the robot in with the cloud. You do not need to use the Vector mobile app.")
       location.reload();
     }
   })
 })
+function certReset() {
+  let confirmAction = confirm("This will put Vector back on the Onboarding screen and he will be unauthenticated from his account. You should use this page or the Vector mobile app to authenticate him with an Anki account after this process is complete. Vector's stats and personality will not be changed or erased. Would you like to continue?");
+  if (confirmAction) {
+    fetch("/api/server_prod")
+    alert("Executing. Vector's eyes will disappear and his face will show 'configuring...'. After a while, he will boot back up to the onboarding screen (blinking V). <<<*Once he is there, press OK and this app will bring up an authentication screen.*>>>");
+    location.reload();
+  };
+};
+
 var as = document.getElementById('authStatus');
 const asP = document.createElement('p');
 asP.textContent =  "Checking for info...";
@@ -120,6 +129,12 @@ function getCurrentSettings() {
       var robot_name = jdocCustomSettings["robot_name"]
       var robot_esn = jdocCustomSettings["robot_esn"]
       var vicos_version = jdocCustomSettings["vicos_version"]
+      var alexa_status = jdocCustomSettings["alexa_status"]
+      if (`${alexa_status}` == "on") {
+        alexaStatus = "Enabled"
+      } else {
+        alexaStatus = "Disabled"
+      }
       if (`${rainboweyes_status}` == "on") {
         rainbowEye = "on"
       } else {
@@ -306,6 +321,11 @@ function getCurrentSettings() {
     s14P.textContent = "VicOS Version: " + `${vicos_version}`
     s14.innerHTML = ''
     s14.appendChild(s14P);
+    var s15 = document.getElementById('alexaStatus');
+    const s15P = document.createElement('p');
+    s15P.textContent = "Alexa Status: " + `${alexaStatus}`
+    s15.innerHTML = ''
+    s15.appendChild(s15P);
   };
 };
 }

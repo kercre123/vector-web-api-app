@@ -15,17 +15,16 @@ import (
     b64 "encoding/base64"
     "crypto/tls"
     "errors"
-    "github.com/rgamba/evtwebsocket"
+    "github.com/gorilla/websocket"
 
 )
 
 var transCfg = &http.Transport{
- TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
+   TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
 }
 
 var serverFiles = "/var/www"
 const address string = "localhost:8888"
-var c = evtwebsocket.Conn{}
 
 func skipOnboarding() {
     url := "http://localhost:8888/consolefunccall"
@@ -63,7 +62,7 @@ func sdkAuth(username string, password string) string {
         authStatus := "error"
         return authStatus
     } else if strings.Contains(sessionsResponse, "session_token") {
-       type SessionsResponses struct {
+     type SessionsResponses struct {
         Session struct {
             SessionToken string    `json:"session_token"`
             UserID       string    `json:"user_id"`
@@ -365,25 +364,60 @@ func getCustomSettings() string {
 }
 
 func launchIntent(intent string) {
-    msg := evtwebsocket.Msg{
-        Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"` + intent + `"}}`),
+    socketUrl := "ws://localhost:8888" + "/socket"
+    conn, _, err1 := websocket.DefaultDialer.Dial(socketUrl, nil)
+    if err1 != nil {
+        log.Fatal("Error connecting to Websocket Server:", err1)
     }
-    log.Println(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"` + intent + `"}}`)
-    c.Send(msg)
+    defer conn.Close()
+    err2 := conn.WriteMessage(websocket.TextMessage, []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"` + intent + `"}}`))
+    if err2 != nil {
+        log.Println("Error during writing to websocket:", err2)
+    }
+    err3 := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+    if err3 != nil {
+        log.Println("Error during closing websocket:", err3)
+        return
+    }
+    return
 }
 
 func setTimer(seconds string) {
-    msg := evtwebsocket.Msg{
-        Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_clock_settimer_extend\", \"parameters\" : \"{\\\"timer_duration\\\":\\\"` + seconds + `'\\\",\\\"unit\\\":\\\"s\\\"}\\n\"}"}}`),
+            socketUrl := "ws://localhost:8888" + "/socket"
+    conn, _, err1 := websocket.DefaultDialer.Dial(socketUrl, nil)
+    if err1 != nil {
+        log.Fatal("Error connecting to Websocket Server:", err1)
     }
-    c.Send(msg)
+    defer conn.Close()
+    err2 := conn.WriteMessage(websocket.TextMessage, []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_clock_settimer_extend\", \"parameters\" : \"{\\\"timer_duration\\\":\\\"` + seconds + `'\\\",\\\"unit\\\":\\\"s\\\"}\\n\"}"}}`))
+    if err2 != nil {
+        log.Println("Error during writing to websocket:", err2)
+    }
+    err3 := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+    if err3 != nil {
+        log.Println("Error during closing websocket:", err3)
+        return
+    }
+    return
 }
 
 func stopTimer() {
-    msg := evtwebsocket.Msg{
-        Body: []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_global_stop_extend\", \"metadata\" : \"text: stop the timer  confidence: 0.000000  handler: HOUNDIFY\", \"parameters\" : \"{\\\"entity_behavior_stoppable\\\":\\\"timer\\\"}\\n\", \"time\" : 1649608984, \"type\" : \"result\" }"}}`),
+        socketUrl := "ws://localhost:8888" + "/socket"
+    conn, _, err1 := websocket.DefaultDialer.Dial(socketUrl, nil)
+    if err1 != nil {
+        log.Fatal("Error connecting to Websocket Server:", err1)
     }
-    c.Send(msg)
+    defer conn.Close()
+    err2 := conn.WriteMessage(websocket.TextMessage, []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_global_stop_extend\", \"metadata\" : \"text: stop the timer  confidence: 0.000000  handler: HOUNDIFY\", \"parameters\" : \"{\\\"entity_behavior_stoppable\\\":\\\"timer\\\"}\\n\", \"time\" : 1649608984, \"type\" : \"result\" }"}}`))
+    if err2 != nil {
+        log.Println("Error during writing to websocket:", err2)
+    }
+    err3 := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+    if err3 != nil {
+        log.Println("Error during closing websocket:", err3)
+        return
+    }
+    return
 }
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
@@ -540,7 +574,6 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func main() {
-    c.Dial("ws://localhost:8888/socket", "")
         http.HandleFunc("/api/", apiHandler)
         fileServer := http.FileServer(http.Dir(serverFiles))
         http.Handle("/", fileServer)

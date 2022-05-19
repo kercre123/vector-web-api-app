@@ -14,6 +14,9 @@
       <hr>
       <div class="center" id="authStatus"></div>
       <hr>
+      <small class="center">If no settings are working, click here to reauthenticate the robot with the cloud. This will put the bot back in onboarding mode (blinking V), but no user data will be cleared.</small>
+      <button onclick="certReset()" type="submit">Reauthenticate</button>
+      <hr>
       <div class="center" id="robotEsn"></div>
       <div class="center" id="robotName"></div>
       <div class="center" id="vicosVersion"></div>
@@ -280,7 +283,19 @@
         <li><button onclick="sendForm('/api/button_hey_vector')" type="submit">Hey Vector</button></li>
         <li><button onclick="sendForm('/api/button_alexa')" type="submit">Alexa</button></li>
       </ul>
-
+      <hr>
+      <h2 class="center">Alexa</h2>
+      <div id="currentAlexa" class="center"></div>
+      <small class="center">Once you are done setting up Alexa, refresh this page for the setting to update.</small>
+      <a class="center" href="https://amazon.com/code">https://amazon.com/code</a>
+      <ul>
+        <li><form method="post" action="/api/cloud_intent?intent=intent_amazon_signin" target="hiddenFrame"> 
+          <button type="submit">Signin Alexa</button>
+        </form></li>
+        <li><form method="post" action="/api/cloud_intent?intent=intent_amazon_signout" target="hiddenFrame"> 
+          <button type="submit">Signout Alexa</button>
+        </form></li>
+      </ul>
       <hr>
       <h2 class="center">Set Location</h2>
       <div id="currentLocation" class="center"></div>
@@ -337,6 +352,7 @@
 
     <hr>
   </div>
+
 </div>
 <script src="./js/httprequest.js"></script>
 <script src="./js/iro.min.js"></script>

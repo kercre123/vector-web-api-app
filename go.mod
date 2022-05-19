@@ -13,6 +13,7 @@ require (
 	github.com/golang/glog v1.0.0 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.1.2
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.1 // indirect
 	github.com/gwatts/rootcerts v0.0.0-20200901201953-2af9685de2db
