@@ -84,6 +84,24 @@ function sendForm(formURL) {
     };
   }
 }
+function sendFormSound(formURL) {
+  let xhr = new XMLHttpRequest();
+    xhr.open("POST", formURL);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.send();
+    xhr.onload = function() { 
+      soundResponse = xhr.response
+      console.log(soundResponse)
+      if (`${soundResponse}` == "error") {
+        alert("Unable to contact wire.my.to, the server is probably down. Please wait a while then try again")
+      } else if (`${soundResponse}` == "executing") {
+        alert("Executing. Vector's screen will be dark for a while, then 'configuring...' will show on his screen. After about 10-40 seconds (depends on internet speed, server speed, etc), his eyes will return and he will have different noises.")
+      } else {
+        alert("unknown :(" + soundResponse)
+      }
+      getCurrentSettings()
+  }
+}
 
 function sendCustomColor() {
   var pickerHue = colorPicker.color.hue;
@@ -132,6 +150,7 @@ function getCurrentSettings() {
       var alexa_status = jdocCustomSettings["alexa_status"]
       var snowglobe_status = jdocCustomSettings["snowglobe_status"]
       var robot_branch = jdocCustomSettings["robot_branch"]
+      var sound_status = jdocCustomSettings["sound_status"]
       if (`${robot_branch}` == "oskr") {
         robotBranch = "OSKR"
       } else if (`${robot_branch}` == "dev") {
@@ -352,6 +371,11 @@ function getCurrentSettings() {
     s17P.textContent = "Build Target: " + `${robotBranch}`
     s17.innerHTML = ''
     s17.appendChild(s17P);
+    var s18 = document.getElementById('soundStatus');
+    const s18P = document.createElement('p');
+    s18P.textContent = "Sound Version: " + `${sound_status}`
+    s18.innerHTML = ''
+    s18.appendChild(s18P);
   };
 };
 }

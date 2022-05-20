@@ -354,11 +354,37 @@
     <hr>
     <h2 class="center">Snowglobe</h2>
     <div id="currentSnowglobe" class="center"></div>
+    <small class="center">This allows you to choose if the snowglobe animation is shown when the bot is shaken.</small>
     <small class="center">This will restart the robot processes. The screen will be dark for around 10 seconds. Refresh this page after his eyes return.</small>
     <ul>
       <li><button onclick="sendForm('/api/snowglobe')" type="submit">Toggle</button></li>
     </ul>
 
+    <hr>
+    <h2 class="center">Sound Chooser</h2>
+    <div id="soundStatus" class="center"></div>
+    <small>This allows you to choose between different soundbanks, ranging from 1.0 to 1.8.</small>
+    <small>This will restart the robot processes. The screen will be dark for around 10 seconds. Refresh this page after the eyes return.</small>
+    <div class="dropdown">
+      <button class="dropbtn">Hover Over This</button>
+      <div class="dropdown-content">
+        <ul>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.7.0.3412')">1.7.0.3412 (same as 1.8>)</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.6.0.3331')">1.6.0.3331</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.5.0.3009')">1.5.0.3009</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.4.1.2806')">1.4.1.2806</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.3.0.2510')">1.3.0.2510</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.2.3.2506')">1.2.3.2506</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.2.2.2353')">1.2.2.2353</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.2.1.2343')">1.2.1.2343 (Alexa may be glitchy before this point)</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.1.1.2107')">1.1.1.2107</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.1.0.2106')">1.1.0.2106</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.0.2.1804')">1.0.2.1804</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.0.1.1768')">1.0.1.1768</button></li>
+          <li><button onclick="sendFormSound('/api/sound_version?version=1.0.0.1741')">1.0.0.1741</button></li>
+        </ul>
+      </div>
+    </div>
     <hr>
   </div>
 
