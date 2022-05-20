@@ -349,7 +349,7 @@ function getCurrentSettings() {
     s16.appendChild(s16P);
     var s17 = document.getElementById('robotBranch');
     const s17P = document.createElement('p');
-    s17P.textContent = "Robot Branch: " + `${robotBranch}`
+    s17P.textContent = "Build Target: " + `${robotBranch}`
     s17.innerHTML = ''
     s17.appendChild(s17P);
   };

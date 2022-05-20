@@ -19,15 +19,16 @@ import (
 
 )
 
+const serverFiles string = "/var/www"
+const sdkAddress string = "localhost:443"
+const vizAddress string = "localhost:8888"
+
 var transCfg = &http.Transport{
    TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
 }
 
-var serverFiles = "/var/www"
-const address string = "localhost:8888"
-
 func skipOnboarding() {
-    url := "http://localhost:8888/consolefunccall"
+    url := "http://" + sdkAddress + "/consolefunccall"
     var form = []byte("func=Exit Onboarding - Mark Complete&args=")
     req, err := http.NewRequest("POST", url, bytes.NewBuffer(form))
     req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -100,7 +101,7 @@ func sdkAuth(username string, password string) string {
     json.Unmarshal([]byte(sessionsResponse), &sessionss)
     sessionToken := sessionss.Session.SessionToken
     tokenEnc := b64.StdEncoding.EncodeToString([]byte(sessionToken))
-    url2 := "https://localhost:443/v1/user_authentication"
+    url2 := "https://" + sdkAddress + "/v1/user_authentication"
     var tokenJSON = []byte(`{"user_session_id": "` + tokenEnc + `"}`)
     req, err := http.NewRequest("POST", url2, bytes.NewBuffer(tokenJSON))
     req.Header.Set("Accept", "/")
@@ -144,7 +145,7 @@ func sdkAuth(username string, password string) string {
     clientGUIDenc := guid.ClientTokenGUID
     clientGUIDdec, _ := b64.StdEncoding.DecodeString(clientGUIDenc)
     clientGUID := string(clientGUIDdec)
-    url3 := "https://localhost:443/v1/pull_jdocs"
+    url3 := "https://" + sdkAddress + "/v1/pull_jdocs"
     var jdocJSON = []byte(`{"jdoc_types": [0, 1, 2, 3]}`)
     req2, err := http.NewRequest("POST", url3, bytes.NewBuffer(jdocJSON))
     req2.Header.Set("Authorization", "Bearer " + clientGUID)
@@ -178,7 +179,7 @@ func getGUID() string {
 func setCustomEyeColor(hue string, sat string) {
     clientGUID := getGUID()
     if !strings.Contains(clientGUID, "error") {
-        url := "https://localhost:443/v1/update_settings"
+        url := "https://" + sdkAddress + "/v1/update_settings"
         var updateJSON = []byte(`{"update_settings": true, "settings": {"custom_eye_color": {"enabled": true, "hue": ` + hue + `, "saturation": ` + sat + `} } }`)
         req, err := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
         req.Header.Set("Authorization", "Bearer " + clientGUID)
@@ -196,7 +197,7 @@ func setCustomEyeColor(hue string, sat string) {
 
 func getSDKSettings() []byte {
     clientGUID := getGUID()
-    url := "https://localhost:443/v1/update_settings"
+    url := "https://" + sdkAddress + "/v1/update_settings"
     var updateJSON = []byte(`{"update_settings": false}`)
     req, err := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
     req.Header.Set("Authorization", "Bearer " + clientGUID)
@@ -215,7 +216,7 @@ func getSDKSettings() []byte {
 func setPresetEyeColor(value string) {
     clientGUID := getGUID()
     if !strings.Contains(clientGUID, "error") {
-        url := "https://localhost:443/v1/update_settings"
+        url := "https://" + sdkAddress + "/v1/update_settings"
         var updateJSON = []byte(`{"update_settings": true, "settings": {"custom_eye_color": {"enabled": false}, "eye_color": ` + value + `} }`)
         req, err := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
         req.Header.Set("Authorization", "Bearer " + clientGUID)
@@ -234,7 +235,7 @@ func setPresetEyeColor(value string) {
 func setSettingSDKstring(setting string, value string) {
     clientGUID := getGUID()
     if !strings.Contains(clientGUID, "error") {
-        url := "https://localhost:443/v1/update_settings"
+        url := "https://" + sdkAddress + "/v1/update_settings"
         var updateJSON = []byte(`{"update_settings": true, "settings": {"` + setting + `": "` + value + `" } }`)
         req, err := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
         req.Header.Set("Authorization", "Bearer " + clientGUID)
@@ -253,7 +254,7 @@ func setSettingSDKstring(setting string, value string) {
 func setSettingSDKintbool(setting string, value string) {
     clientGUID := getGUID()
     if !strings.Contains(clientGUID, "error") {
-        url := "https://localhost:443/v1/update_settings"
+        url := "https://" + sdkAddress + "/v1/update_settings"
         var updateJSON = []byte(`{"update_settings": true, "settings": {"` + setting + `": ` + value + ` } }`)
         req, err := http.NewRequest("POST", url, bytes.NewBuffer(updateJSON))
         req.Header.Set("Authorization", "Bearer " + clientGUID)
@@ -375,52 +376,14 @@ func getCustomSettings() string {
     return jsonResponse
 }
 
-func launchIntent(intent string) {
-    socketUrl := "ws://localhost:8888" + "/socket"
+func sendSocketMessage(message string) {
+    socketUrl := "ws://" + vizAddress + "/socket"
     conn, _, err1 := websocket.DefaultDialer.Dial(socketUrl, nil)
     if err1 != nil {
         log.Fatal("Error connecting to Websocket Server:", err1)
     }
     defer conn.Close()
-    err2 := conn.WriteMessage(websocket.TextMessage, []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"` + intent + `"}}`))
-    if err2 != nil {
-        log.Println("Error during writing to websocket:", err2)
-    }
-    err3 := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-    if err3 != nil {
-        log.Println("Error during closing websocket:", err3)
-        return
-    }
-    return
-}
-
-func setTimer(seconds string) {
-            socketUrl := "ws://localhost:8888" + "/socket"
-    conn, _, err1 := websocket.DefaultDialer.Dial(socketUrl, nil)
-    if err1 != nil {
-        log.Fatal("Error connecting to Websocket Server:", err1)
-    }
-    defer conn.Close()
-    err2 := conn.WriteMessage(websocket.TextMessage, []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_clock_settimer_extend\", \"parameters\" : \"{\\\"timer_duration\\\":\\\"` + seconds + `'\\\",\\\"unit\\\":\\\"s\\\"}\\n\"}"}}`))
-    if err2 != nil {
-        log.Println("Error during writing to websocket:", err2)
-    }
-    err3 := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-    if err3 != nil {
-        log.Println("Error during closing websocket:", err3)
-        return
-    }
-    return
-}
-
-func stopTimer() {
-        socketUrl := "ws://localhost:8888" + "/socket"
-    conn, _, err1 := websocket.DefaultDialer.Dial(socketUrl, nil)
-    if err1 != nil {
-        log.Fatal("Error connecting to Websocket Server:", err1)
-    }
-    defer conn.Close()
-    err2 := conn.WriteMessage(websocket.TextMessage, []byte(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_global_stop_extend\", \"metadata\" : \"text: stop the timer  confidence: 0.000000  handler: HOUNDIFY\", \"parameters\" : \"{\\\"entity_behavior_stoppable\\\":\\\"timer\\\"}\\n\", \"time\" : 1649608984, \"type\" : \"result\" }"}}`))
+    err2 := conn.WriteMessage(websocket.TextMessage, []byte(message))
     if err2 != nil {
         log.Println("Error during writing to websocket:", err2)
     }
@@ -445,12 +408,12 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         return
     case r.URL.Path == "/api/cloud_intent":
         intent := r.FormValue("intent")
-        launchIntent(intent)
+        sendSocketMessage(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"` + intent + `"}}`)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/set_timer":
         secs := r.FormValue("secs")
-        setTimer(secs)
+        sendSocketMessage(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_clock_settimer_extend\", \"parameters\" : \"{\\\"timer_duration\\\":\\\"` + secs + `'\\\",\\\"unit\\\":\\\"s\\\"}\\n\"}"}}`)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/eye_color":
@@ -485,7 +448,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/stop_timer":
-        stopTimer()
+        sendSocketMessage(`{"type":"data","module":"intents","data":{"intentType":"cloud","request":"{ \"intent\" : \"intent_global_stop_extend\", \"metadata\" : \"text: stop the timer  confidence: 0.000000  handler: HOUNDIFY\", \"parameters\" : \"{\\\"entity_behavior_stoppable\\\":\\\"timer\\\"}\\n\", \"time\" : 1649608984, \"type\" : \"result\" }"}}`)
         fmt.Fprintf(w, "done")
         return
     case r.URL.Path == "/api/get_auth_status":
@@ -564,6 +527,10 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "executing")
         cmd := exec.Command("/bin/bash", "/sbin/vector-ctrldd", "snowglobe")
         cmd.Run()
+        return
+    case r.URL.Path == "/api/sound_set":
+        soundv := r.FormValue("sound_version")
+        fmt.Fprintf(w, "not implemented yet" + soundv)
         return
     case r.URL.Path == "/api/freq":
         perfPreset := r.FormValue("freq")
