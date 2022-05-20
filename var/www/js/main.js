@@ -130,6 +130,22 @@ function getCurrentSettings() {
       var robot_esn = jdocCustomSettings["robot_esn"]
       var vicos_version = jdocCustomSettings["vicos_version"]
       var alexa_status = jdocCustomSettings["alexa_status"]
+      var snowglobe_status = jdocCustomSettings["snowglobe_status"]
+      var robot_branch = jdocCustomSettings["robot_branch"]
+      if (`${robot_branch}` == "oskr") {
+        robotBranch = "OSKR"
+      } else if (`${robot_branch}` == "dev") {
+        robotBranch = "Dev"
+      } else if (`${robot_branch}` == "whiskey") {
+        robotBranch = "Whiskey"
+      } else if (`${robot_branch}` == "oskrns") {
+        robotBranch = "OSKRns"
+      }
+      if (`${snowglobe_status}` == "on") {
+        snowglobeStatus = "Enabled"
+      } else {
+        snowglobeStatus = "Disabled"
+      }
       if (`${alexa_status}` == "on") {
         alexaStatus = "Enabled"
       } else {
@@ -326,6 +342,16 @@ function getCurrentSettings() {
     s15P.textContent = "Alexa Status: " + `${alexaStatus}`
     s15.innerHTML = ''
     s15.appendChild(s15P);
+    var s16 = document.getElementById('currentSnowglobe');
+    const s16P = document.createElement('p');
+    s16P.textContent = "Snowglobe Status: " + `${snowglobeStatus}`
+    s16.innerHTML = ''
+    s16.appendChild(s16P);
+    var s17 = document.getElementById('robotBranch');
+    const s17P = document.createElement('p');
+    s17P.textContent = "Robot Branch: " + `${robotBranch}`
+    s17.innerHTML = ''
+    s17.appendChild(s17P);
   };
 };
 }

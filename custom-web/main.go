@@ -304,6 +304,8 @@ func getCustomSettings() string {
     var vicosVersion string
     var robotName string
     var serialNumber string
+    var snowglobeStatus string
+    var robotBranch string
     if _, err := os.Stat("/data/data/snore_disable"); err == nil {
         snore = "off"
     } else {
@@ -354,12 +356,22 @@ func getCustomSettings() string {
         log.Println("no serial string")
     }
     serialNumber = strings.TrimSpace(string(serialBytes))
-    fileBytes, err := ioutil.ReadFile("/data/data/robotName")
+    nameBytes, err := ioutil.ReadFile("/data/data/robotName")
     if err != nil {
         log.Println("no name string")
     }
-    robotName = strings.TrimSpace(string(fileBytes))
-    jsonResponse = `{"snore_status": "` + snore + `", "rainboweyes_status": "` + rainbowEyes + `", "freq_status": "` + freqStatus + `", "server_status": "` + serverStatus + `", "alexa_status": "` + alexaStatus + `", "sound_status": "` + soundStatus + `", "vicos_version": "` + vicosVersion +`", "robot_esn": "` + serialNumber + `", "robot_name": "` + robotName +`"}`
+    robotName = strings.TrimSpace(string(nameBytes))
+    branchBytes, err := ioutil.ReadFile("/data/data/robotBranch")
+    if err != nil {
+        log.Println("no branch string")
+    }
+    robotBranch = strings.TrimSpace(string(branchBytes))
+    if _, err := os.Stat("/data/data/snowglobe"); err == nil {
+        snowglobeStatus = "on"
+    } else {
+        snowglobeStatus = "off"
+    }
+    jsonResponse = `{"snore_status": "` + snore + `", "rainboweyes_status": "` + rainbowEyes + `", "freq_status": "` + freqStatus + `", "server_status": "` + serverStatus + `", "alexa_status": "` + alexaStatus + `", "sound_status": "` + soundStatus + `", "vicos_version": "` + vicosVersion +`", "robot_esn": "` + serialNumber + `", "robot_name": "` + robotName +`", "robot_branch": "` + robotBranch + `", "snowglobe_status": "` + snowglobeStatus + `"}`
     return jsonResponse
 }
 
@@ -546,6 +558,11 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
     case r.URL.Path == "/api/server_prod":
         fmt.Fprintf(w, "executing")
         cmd := exec.Command("/bin/bash", "/sbin/vector-ctrldd", "server_prod")
+        cmd.Run()
+        return
+    case r.URL.Path == "/api/snowglobe":
+        fmt.Fprintf(w, "executing")
+        cmd := exec.Command("/bin/bash", "/sbin/vector-ctrldd", "snowglobe")
         cmd.Run()
         return
     case r.URL.Path == "/api/freq":

@@ -20,6 +20,7 @@
       <div class="center" id="robotEsn"></div>
       <div class="center" id="robotName"></div>
       <div class="center" id="vicosVersion"></div>
+      <div class="center" id="robotBranch"></div>
       <hr>
       <h2 class="center">Volume</h2>
       <div id="currentVolume" class="center"></div>
@@ -285,15 +286,15 @@
       </ul>
       <hr>
       <h2 class="center">Alexa</h2>
-      <div id="currentAlexa" class="center"></div>
-      <small class="center">Once you are done setting up Alexa, refresh this page for the setting to update.</small>
-      <a class="center" href="https://amazon.com/code">https://amazon.com/code</a>
+      <div id="alexaStatus" class="center"></div>
+      <small class="center">Once you are done setting up Alexa, <b>refresh this page for the setting to update.</b></small>
+      <a class="center" target="_blank" rel="noopener noreferrer" href="https://amazon.com/code">https://amazon.com/code</a>
       <ul>
         <li><form method="post" action="/api/cloud_intent?intent=intent_amazon_signin" target="hiddenFrame"> 
           <button type="submit">Signin Alexa</button>
         </form></li>
         <li><form method="post" action="/api/cloud_intent?intent=intent_amazon_signout" target="hiddenFrame"> 
-          <button type="submit">Signout Alexa</button>
+          <button class="settingsExtra" type="submit">Signout Alexa</button>
         </form></li>
       </ul>
       <hr>
@@ -348,6 +349,14 @@
     <ul>
       <li><button onclick="sendForm('/api/snore_enable')" type="submit">Enable</button></li>
       <li><button onclick="sendForm('/api/snore_disable')" type="submit">Disable</button></li>
+    </ul>
+
+    <hr>
+    <h2 class="center">Snowglobe</h2>
+    <div id="currentSnowglobe" class="center"></div>
+    <small class="center">This will restart the robot processes. The screen will be dark for around 10 seconds. Refresh this page after his eyes return.</small>
+    <ul>
+      <li><button onclick="sendForm('/api/snowglobe')" type="submit">Toggle</button></li>
     </ul>
 
     <hr>
