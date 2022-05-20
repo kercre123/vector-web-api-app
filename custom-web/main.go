@@ -336,12 +336,12 @@ func getCustomSettings() string {
     } else {
         alexaStatus = "off"
     }
-    if _, err := os.Stat("/data/data/soundStatus"); err == nil {
-        fileBytes, err := ioutil.ReadFile("/data/data/soundStatus")
+    if _, err := os.Stat("/anki/data/assets/cozmo_resources/sound/version"); err == nil {
+        fileBytes, err := ioutil.ReadFile("/anki/data/assets/cozmo_resources/sound/version")
         if err != nil {
             log.Println("no sound status")
         }
-        soundStatus = string(fileBytes)
+        soundStatus = strings.TrimSpace(string(fileBytes))
     } else {
         soundStatus = "1.8.0.6051"
     }
@@ -528,9 +528,31 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         cmd := exec.Command("/bin/bash", "/sbin/vector-ctrldd", "snowglobe")
         cmd.Run()
         return
-    case r.URL.Path == "/api/sound_set":
-        soundv := r.FormValue("sound_version")
-        fmt.Fprintf(w, "not implemented yet" + soundv)
+    case r.URL.Path == "/api/sound_version":
+        version := r.FormValue("version")
+        cmd := exec.Command("/bin/bash", "/sbin/vector-ctrl", "pingtest")
+        cmd.Run()
+        var versions string = "1.8.1.60511.8.0.60211.7.0.34121.6.0.33311.5.0.30091.4.1.28061.3.0.25101.2.3.25061.2.2.23531.2.1.23431.1.1.21071.1.0.21061.0.2.18041.0.1.17681.0.0.1741"
+        if (strings.Contains(versions, version)) {
+            if _, err := os.Stat("/tmp/testPing"); err == nil {
+                testBytes, err := ioutil.ReadFile("/tmp/testPing")
+                if err != nil {
+                    log.Println("no test string")
+                    fmt.Fprintf(w, "error")
+                }
+                if (strings.Contains(string(testBytes), "success")) {
+                    cmd1 := exec.Command("/bin/rm", "-f", "/tmp/testPing")
+                    cmd1.Run()
+                    fmt.Fprintf(w, "executing")
+                    cmd2 := exec.Command("/bin/bash", "/sbin/vector-ctrldd", "sound_version", version)
+                    cmd2.Run()
+                }
+            } else {
+                fmt.Fprintf(w, "error")
+            }
+        } else {
+            fmt.Fprintf(w, "error")
+        }
         return
     case r.URL.Path == "/api/freq":
         perfPreset := r.FormValue("freq")
@@ -558,13 +580,13 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func main() {
-        http.HandleFunc("/api/", apiHandler)
-        fileServer := http.FileServer(http.Dir(serverFiles))
-        http.Handle("/", fileServer)
+    http.HandleFunc("/api/", apiHandler)
+    fileServer := http.FileServer(http.Dir(serverFiles))
+    http.Handle("/", fileServer)
 
 
-        fmt.Printf("Starting server at port 8080\n")
-        if err := http.ListenAndServe(":8080", nil); err != nil {
-            log.Fatal(err)
-        }
+    fmt.Printf("Starting server at port 8080\n")
+    if err := http.ListenAndServe(":8080", nil); err != nil {
+        log.Fatal(err)
     }
+}
