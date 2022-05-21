@@ -95,7 +95,8 @@ function sendFormSound(formURL) {
       if (`${soundResponse}` == "error") {
         alert("Unable to contact wire.my.to, the server is probably down. Please wait a while then try again")
       } else if (`${soundResponse}` == "executing") {
-        alert("Executing. Vector's screen will be dark for a while, then 'configuring...' will show on his screen. After about 10-40 seconds (depends on internet speed, server speed, etc), his eyes will return and he will have different noises.")
+        alert("Executing. Vector's screen will be dark for a while, then 'configuring...' will show on his screen. After about 10-40 seconds (depends on internet speed), his eyes will return and he will have different noises. Press OK once that happens.")
+        location.reload();
       } else {
         alert("unknown :(" + soundResponse)
       }
@@ -159,6 +160,8 @@ function getCurrentSettings() {
         robotBranch = "Whiskey"
       } else if (`${robot_branch}` == "oskrns") {
         robotBranch = "OSKRns"
+      } else {
+        robotBranch = robot_branch
       }
       if (`${snowglobe_status}` == "on") {
         snowglobeStatus = "Enabled"
@@ -373,7 +376,7 @@ function getCurrentSettings() {
     s17.appendChild(s17P);
     var s18 = document.getElementById('soundStatus');
     const s18P = document.createElement('p');
-    s18P.textContent = "Sound Version: " + `${sound_status}`
+    s18P.textContent = "Soundbank Version: " + `${sound_status}`
     s18.innerHTML = ''
     s18.appendChild(s18P);
   };

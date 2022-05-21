@@ -532,7 +532,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
         version := r.FormValue("version")
         cmd := exec.Command("/bin/bash", "/sbin/vector-ctrl", "pingtest")
         cmd.Run()
-        var versions string = "1.8.1.60511.8.0.60211.7.0.34121.6.0.33311.5.0.30091.4.1.28061.3.0.25101.2.3.25061.2.2.23531.2.1.23431.1.1.21071.1.0.21061.0.2.18041.0.1.17681.0.0.1741"
+        var versions string = "1.8.1.6051 1.8.0.6021 1.7.0.3412 1.6.0.3331 1.5.0.3009 1.4.1.2806 1.3.0.2510 1.2.3.2506 1.2.2.2353 1.2.1.2343 1.1.1.2107 1.1.0.2106 1.0.2.1804 1.0.1.1768 1.0.0.1741"
         if (strings.Contains(versions, version)) {
             if _, err := os.Stat("/tmp/testPing"); err == nil {
                 testBytes, err := ioutil.ReadFile("/tmp/testPing")

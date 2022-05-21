@@ -287,15 +287,13 @@
       <hr>
       <h2 class="center">Alexa</h2>
       <div id="alexaStatus" class="center"></div>
-      <small class="center">Once you are done setting up Alexa, refresh this page for the setting to update.</small>
+      <small class="center">After changing this setting, refresh this page for the above text to update.</small>
       <a class="center" target="_blank" rel="noopener noreferrer" href="https://amazon.com/code">https://amazon.com/code</a>
       <ul>
         <li><form method="post" action="/api/cloud_intent?intent=intent_amazon_signin" target="hiddenFrame"> 
           <button type="submit">Signin Alexa</button>
         </form></li>
-        <li><form method="post" action="/api/cloud_intent?intent=intent_amazon_signout" target="hiddenFrame"> 
-          <button class="settingsExtra" type="submit">Signout Alexa</button>
-        </form></li>
+        <li><button onclick="sendForm('/api/cloud_intent?intent=intent_amazon_signout')" type="submit">Signout Alexa</button></li>
       </ul>
       <hr>
       <h2 class="center">Set Location</h2>
@@ -341,30 +339,11 @@
      <form method="post" action="/api/skip_onboarding" target="hiddenFrame">
       <button type="submit">Skip Onboarding</button>
     </form>
-
     <hr>
-    <h2 class="center">Snore While Sleeping</h2>
-    <div id="currentSnore" class="center"></div>
-    <small class="center">This will restart the robot processes. The screen will be dark for around 10 seconds. Refresh this page after his eyes return.</small>
-    <ul>
-      <li><button onclick="sendForm('/api/snore_enable')" type="submit">Enable</button></li>
-      <li><button onclick="sendForm('/api/snore_disable')" type="submit">Disable</button></li>
-    </ul>
-
-    <hr>
-    <h2 class="center">Snowglobe</h2>
-    <div id="currentSnowglobe" class="center"></div>
-    <small class="center">This allows you to choose if the snowglobe animation is shown when the bot is shaken.</small>
-    <small class="center">This will restart the robot processes. The screen will be dark for around 10 seconds. Refresh this page after his eyes return.</small>
-    <ul>
-      <li><button onclick="sendForm('/api/snowglobe')" type="submit">Toggle</button></li>
-    </ul>
-
-    <hr>
-    <h2 class="center">Sound Chooser</h2>
+    <h2 class="center">Soundbank Chooser</h2>
     <div id="soundStatus" class="center"></div>
-    <small>This allows you to choose between different soundbanks, ranging from 1.0 to 1.8.</small>
-    <small>This will restart the robot processes. The screen will be dark for around 10 seconds. Refresh this page after the eyes return.</small>
+    <small>This allows you to choose between different soundbanks, ranging from 1.0 to 1.8.</small><br>
+    <small>This will restart the robot processes. The screen will be dark for around 10 seconds</small>
     <div class="dropdown">
       <button class="dropbtn">Hover Over This</button>
       <div class="dropdown-content">
@@ -385,6 +364,24 @@
         </ul>
       </div>
     </div>
+    <hr>
+    <h2 class="center">Snore While Sleeping</h2>
+    <div id="currentSnore" class="center"></div>
+    <small class="center">This will restart the robot processes. The screen will be dark for around 10 seconds. Refresh this page after his eyes return.</small>
+    <ul>
+      <li><button onclick="sendForm('/api/snore_enable')" type="submit">Enable</button></li>
+      <li><button onclick="sendForm('/api/snore_disable')" type="submit">Disable</button></li>
+    </ul>
+
+    <hr>
+    <h2 class="center">Snowglobe</h2>
+    <div id="currentSnowglobe" class="center"></div>
+    <small class="center">This allows you to choose if the snowglobe animation is used instead of dizzy.</small><br>
+    <small class="center">This will restart the robot processes. The screen will be dark for around 10 seconds. Refresh this page after his eyes return.</small>
+    <ul>
+      <li><button onclick="sendForm('/api/snowglobe')" type="submit">Toggle</button></li>
+    </ul>
+
     <hr>
   </div>
 
