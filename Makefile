@@ -20,7 +20,7 @@ custom-web: go_deps
 	--trimpath \
 	-ldflags '-w -s -linkmode internal -extldflags "-static" -r /anki/lib' \
 	-o build/custom-web \
-	custom-web/main.go
+	custom-web/*.go
 
 	docker container run \
 	-v "$(PWD)":/go/src/digital-dream-labs/vector-cloud \
