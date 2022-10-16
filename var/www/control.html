@@ -18,8 +18,13 @@
       <button onclick="sdkUnInit()" type="submit">End connection</button>
       <hr>
       <div id=sdkActions>
+        <h2 class="center">Camera Feed</h2>
+        <div class="center" id="camStream"><img src="/stream"></div>
+        <button onclick="showCamStream()">Begin Camera Stream</button>
+        <button onclick="stopCamStream()">Stop Camera Stream</button>
+        <hr>
       <h2 class="center">Behavior Control</h2>
-      <small>You must assume behavior control before performing any action</small>
+      <small class="center">You must assume behavior control before performing any action</small>
       <ul>
         <li><button onclick="sendForm('/api/assume_behavior_control?priority=high')" type="submit">Assume</button></li>
         <li><button onclick="sendForm('/api/release_behavior_control')" type="submit">Release</button></li>
@@ -27,7 +32,7 @@
       <hr>
       <h2 class="center">Move Wheels</h2>
       <button onclick="toggleKeyboard()" type=submit">Toggle Keyboard Controls (unstable)</button></li>
-      <div id="keysKey"><small>Enabled! Controls: W - forward, A - left, S - back, D - right. Key combinations work too</small></div>
+      <div id="keysKey"><small class="center">Enabled! WASD for wheels, R-lift up, F-lift down, T-head up, G-head down</small></div>
       <hr>
       <h2 class="center">Say Text</h2>
       <div class="center">

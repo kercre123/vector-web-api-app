@@ -8,8 +8,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"image"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
@@ -20,6 +22,7 @@ import (
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vector"
 	"github.com/digital-dream-labs/vector-go-sdk/pkg/vectorpb"
 	"github.com/gorilla/websocket"
+	"hz.tools/mjpeg"
 )
 
 const serverFiles string = "/var/www"
@@ -29,6 +32,8 @@ const vizAddress string = "localhost:8888"
 var robot *vector.Vector
 var bcAssumption bool = false
 var ctx context.Context
+var camStreamEnable bool = false
+var camStreamClient vectorpb.ExternalInterface_CameraFeedClient
 
 var transCfg = &http.Transport{
 	TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
@@ -152,6 +157,24 @@ func driveWheelsForward(lw float32, rw float32, lwtwo float32, rwtwo float32) {
 			RightWheelMmps:  rw,
 			LeftWheelMmps2:  lwtwo,
 			RightWheelMmps2: rwtwo,
+		},
+	)
+}
+
+func moveLift(speed float32) {
+	_, _ = robot.Conn.MoveLift(
+		ctx,
+		&vectorpb.MoveLiftRequest{
+			SpeedRadPerSec: speed,
+		},
+	)
+}
+
+func moveHead(speed float32) {
+	_, _ = robot.Conn.MoveHead(
+		ctx,
+		&vectorpb.MoveHeadRequest{
+			SpeedRadPerSec: speed,
 		},
 	)
 }
@@ -681,6 +704,26 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		driveWheelsForward(float32(lw), float32(rw), float32(lw), float32(rw))
 		fmt.Fprintf(w, "")
 		return
+	case r.URL.Path == "/api/begin_cam_stream":
+		camStreamClient, _ = robot.Conn.CameraFeed(ctx, &vectorpb.CameraFeedRequest{})
+		camStreamEnable = true
+		fmt.Fprintf(w, "success")
+		return
+	case r.URL.Path == "/api/stop_cam_stream":
+		camStreamEnable = false
+		camStreamClient = nil
+		fmt.Fprintf(w, "success")
+		return
+	case r.URL.Path == "/api/move_lift":
+		speed, _ := strconv.Atoi(r.FormValue("speed"))
+		moveLift(float32(speed))
+		fmt.Fprintf(w, "")
+		return
+	case r.URL.Path == "/api/move_head":
+		speed, _ := strconv.Atoi(r.FormValue("speed"))
+		moveHead(float32(speed))
+		fmt.Fprintf(w, "")
+		return
 	case r.URL.Path == "/api/sound_version":
 		version := r.FormValue("version")
 		cmd := exec.Command("/bin/bash", "/sbin/vector-ctrl", "pingtest")
@@ -732,9 +775,32 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	camStream := mjpeg.NewStream()
+	i := image.NewGray(image.Rectangle{
+		Min: image.Point{X: 0, Y: 0},
+		Max: image.Point{X: 640, Y: 360},
+	})
+	go func() {
+		for {
+			if camStreamEnable {
+				response, _ := camStreamClient.Recv()
+				imageBytes := response.GetData()
+				img, _, _ := image.Decode(bytes.NewReader(imageBytes))
+				camStream.Update(img)
+			} else {
+				for j := range i.Pix {
+					i.Pix[j] = uint8(rand.Uint32())
+				}
+
+				time.Sleep(time.Second)
+				camStream.Update(i)
+			}
+		}
+	}()
 	http.HandleFunc("/api/", apiHandler)
 	fileServer := http.FileServer(http.Dir(serverFiles))
 	http.Handle("/", fileServer)
+	http.Handle("/stream", camStream)
 
 	fmt.Printf("Starting server at port 8080\n")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
