@@ -45,6 +45,11 @@ function certReset() {
   };
 };
 
+function revealSdkActions() {
+  var x = document.getElementById("sdkActions");
+  x.style.display = "block";
+}
+
 var as = document.getElementById('authStatus');
 const asP = document.createElement('p');
 asP.textContent =  "Checking for info...";

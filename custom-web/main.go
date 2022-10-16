@@ -28,6 +28,7 @@ const vizAddress string = "localhost:8888"
 
 var robot *vector.Vector
 var bcAssumption bool = false
+var ctx context.Context
 
 var transCfg = &http.Transport{
 	TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore SSL warnings
@@ -42,16 +43,78 @@ func initSDK() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	ctx = context.Background()
 }
 
-func assumeBehaviorControl() {
+func assumeBehaviorControl(priority string) {
+	var controlRequest *vectorpb.BehaviorControlRequest
+	if priority == "high" {
+		controlRequest = &vectorpb.BehaviorControlRequest{
+			RequestType: &vectorpb.BehaviorControlRequest_ControlRequest{
+				ControlRequest: &vectorpb.ControlRequest{
+					Priority: vectorpb.ControlRequest_OVERRIDE_BEHAVIORS,
+				},
+			},
+		}
+	} else {
+		controlRequest = &vectorpb.BehaviorControlRequest{
+			RequestType: &vectorpb.BehaviorControlRequest_ControlRequest{
+				ControlRequest: &vectorpb.ControlRequest{
+					Priority: vectorpb.ControlRequest_DEFAULT,
+				},
+			},
+		}
+	}
 	go func() {
-		ctx := context.Background()
 		start := make(chan bool)
 		stop := make(chan bool)
 		bcAssumption = true
 		go func() {
-			robot.BehaviorControl(ctx, start, stop)
+			// * begin - modified from official vector-go-sdk
+			r, err := robot.Conn.BehaviorControl(
+				ctx,
+			)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+
+			if err := r.Send(controlRequest); err != nil {
+				log.Println(err)
+				return
+			}
+
+			for {
+				ctrlresp, err := r.Recv()
+				if err != nil {
+					log.Println(err)
+					return
+				}
+				if ctrlresp.GetControlGrantedResponse() != nil {
+					start <- true
+					break
+				}
+			}
+
+			for {
+				select {
+				case <-stop:
+					if err := r.Send(
+						&vectorpb.BehaviorControlRequest{
+							RequestType: &vectorpb.BehaviorControlRequest_ControlRelease{
+								ControlRelease: &vectorpb.ControlRelease{},
+							},
+						},
+					); err != nil {
+						log.Println(err)
+						return
+					}
+					return
+				default:
+					continue
+				}
+			}
+			// * end - modified from official vector-go-sdk
 		}()
 		for {
 			select {
@@ -71,7 +134,6 @@ func assumeBehaviorControl() {
 }
 
 func sayText(text string) {
-	ctx := context.Background()
 	_, _ = robot.Conn.SayText(
 		ctx,
 		&vectorpb.SayTextRequest{
@@ -83,7 +145,6 @@ func sayText(text string) {
 }
 
 func driveWheelsForward(lw float32, rw float32, lwtwo float32, rwtwo float32) {
-	ctx := context.Background()
 	_, _ = robot.Conn.DriveWheels(
 		ctx,
 		&vectorpb.DriveWheelsRequest{
@@ -605,7 +666,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	case r.URL.Path == "/api/assume_behavior_control":
 		fmt.Fprintf(w, "done")
-		assumeBehaviorControl()
+		assumeBehaviorControl(r.FormValue("priority"))
 	case r.URL.Path == "/api/release_behavior_control":
 		fmt.Fprintf(w, "done")
 		releaseBehaviorControl()

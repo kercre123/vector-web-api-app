@@ -8,7 +8,7 @@ fi
 echo "Waking vector up..."
 
 curl http://$1:8080/api/initSDK
-curl http://$1:8080/api/assume_behavior_control
+curl -d "priority=high" http://$1:8080/api/assume_behavior_control
 
 sleep 3
 echo
